@@ -1,0 +1,9 @@
+1. The usage can be 0, but it must never be negative.
+
+2. The return can be 0, but has to be filled.
+
+3. readings should have intervals of 1 hour for each ean.
+
+4. EAN values must always be 18-digit numeric strings.
+
+5. If the source is SDS, return value must be filled

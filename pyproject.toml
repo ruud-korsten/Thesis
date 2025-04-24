@@ -3,13 +3,18 @@ name = "thesis"
 version = "0.1.0"
 description = ""
 readme = "README.md"
-requires-python = ">=3.11"
-authors = ["Ruud Korsten <ruud.korsten@blenddata.nl>"]
-dependencies = []
+requires-python = ">=3.9"
+authors = [
+  { name = "Ruud Korsten", email = "ruud.korsten@blenddata.nl" }
+]
+dependencies = [
+    "pandas",
+    "psycopg2-binary",
+    "python-dotenv"
+]
 
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+[tool.setuptools]
+package-dir = {"" = "src"}
 
-[tool.hatch.build.targets.wheel]
-packages = ["src"]
+[tool.setuptools.packages.find]
+where = ["src"]
