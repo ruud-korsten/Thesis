@@ -1,0 +1,52 @@
+[
+  {
+    "id": "R001",
+    "name": "Non-negative Usage",
+    "type": "range",
+    "column": "usage",
+    "condition": {
+      "min": 0
+    },
+    "message": "The usage can be 0, but it must never be negative."
+  },
+  {
+    "id": "R002",
+    "name": "Return Not Null",
+    "type": "not_null",
+    "column": "return",
+    "message": "The return can be 0, but has to be filled."
+  },
+  {
+    "id": "R003",
+    "name": "Hourly Readings Interval",
+    "type": "frequency",
+    "column": "datetime_recorded",
+    "expected_interval": "1 hour",
+    "group_by": "ean",
+    "message": "Readings should have intervals of 1 hour for each ean."
+  },
+  {
+    "id": "R004",
+    "name": "EAN 18-digit Numeric String",
+    "type": "pattern",
+    "column": "ean",
+    "condition": "^[0-9]{18}$",
+    "message": "EAN values must always be 18-digit numeric strings."
+  },
+  {
+    "id": "R005",
+    "name": "Return Value Required for SDS",
+    "type": "conditional",
+    "condition": {
+      "if": {
+        "column": "bron",
+        "equals": "SDS"
+      },
+      "then": {
+        "column": "return",
+        "condition": {}
+      }
+    },
+    "message": "If the source is SDS, the return value must be filled."
+  }
+]
