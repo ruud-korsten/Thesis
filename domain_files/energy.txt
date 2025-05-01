@@ -1,0 +1,8 @@
+The data contains hourly readings on energy usage and energy returns
+The usage can be 0, but it must never be negative or null
+The return can be 0, but has to be filled
+readings should have intervals of 1 hour for each ean
+EAN values must always be 18-digit numeric strings
+If the source is SDS, return value must be filled
+Abnormal spikes in energy consumption could be wrong sensor readings
+De usage en return kunnen nooit allebei tegelijk negatief zijn

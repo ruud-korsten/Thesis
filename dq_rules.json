@@ -1,41 +1,44 @@
 [
   {
     "id": "R001",
-    "name": "Non-negative Usage",
+    "name": "Usage must not be negative",
     "type": "range",
     "column": "usage",
     "condition": {
       "min": 0
     },
-    "message": "The usage can be 0, but it must never be negative."
+    "message": "The usage value must never be negative."
   },
   {
     "id": "R002",
-    "name": "Return Not Null",
+    "name": "Return must not be null",
     "type": "not_null",
     "column": "return",
-    "message": "The return can be 0, but has to be filled."
-  },
-  {
-    "id": "R003",
-    "name": "Hourly Readings Interval",
-    "type": "frequency",
-    "column": "datetime_recorded",
-    "expected_interval": "1 hour",
-    "group_by": "ean",
-    "message": "Readings should have intervals of 1 hour for each ean."
+    "message": "The return value must be filled and cannot be null."
   },
   {
     "id": "R004",
-    "name": "EAN 18-digit Numeric String",
+    "name": "EAN must be 18-digit numeric",
     "type": "pattern",
     "column": "ean",
-    "condition": "^[0-9]{18}$",
+    "condition": {
+      "regex": "^\\d{18}$"
+    },
     "message": "EAN values must always be 18-digit numeric strings."
   },
   {
     "id": "R005",
-    "name": "Return Value Required for SDS",
+    "name": "Return must not be negative",
+    "type": "range",
+    "column": "return",
+    "condition": {
+      "min": 0
+    },
+    "message": "The return value must not be negative."
+  },
+  {
+    "id": "R006",
+    "name": "Conditional return for SDS source",
     "type": "conditional",
     "condition": {
       "if": {
@@ -44,9 +47,30 @@
       },
       "then": {
         "column": "return",
-        "condition": {}
+        "not_null": true
       }
     },
     "message": "If the source is SDS, the return value must be filled."
+  },
+  {
+    "id": "R007",
+    "name": "Mutual non-negativity of usage and return",
+    "type": "conditional",
+    "condition": {
+      "if": {
+        "column": "usage",
+        "condition": {
+          "min": -Infinity,
+          "max": -0.01
+        }
+      },
+      "then": {
+        "column": "return",
+        "condition": {
+          "min": 0
+        }
+      }
+    },
+    "message": "Usage and return cannot both be negative simultaneously."
   }
 ]

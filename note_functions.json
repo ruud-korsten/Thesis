@@ -1,0 +1,5 @@
+{
+  "Abnormal spikes in energy consumption could be wrong sensor readings.": "def detect_abnormal_spikes_in_energy_consumption(df):\n    threshold_multiplier = 3\n    usage_mean = df['usage'].mean()\n    usage_std = df['usage'].std()\n    threshold = usage_mean + threshold_multiplier * usage_std\n    return df['usage'] > threshold",
+  "Spontaneous positive return readings for eans where the return is normally always 0 could be wrong.": "def check_spontaneous_positive_return(df):\n    # Group by 'ean' and calculate the sum of 'return' for each group\n    ean_return_sums = df.groupby('ean')['return'].sum()\n\n    # Identify eans where the return is normally always 0\n    eans_with_zero_return = ean_return_sums[ean_return_sums == 0].index\n\n    # Check for spontaneous positive return readings for these eans\n    violations = (df['ean'].isin(eans_with_zero_return)) & (df['return'] > 0)\n\n    return violations",
+  "Usage and return cannot both be negative simultaneously.": "def check_negative_usage_and_return(df):\n    return (df['usage'] < 0) & (df['return'] < 0)"
+}

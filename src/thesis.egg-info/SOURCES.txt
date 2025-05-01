@@ -1,0 +1,11 @@
+README.md
+pyproject.toml
+src/quality_assesment/__init__.py
+src/quality_assesment/checker.py
+src/quality_assesment/db.py
+src/quality_assesment/main.py
+src/thesis.egg-info/PKG-INFO
+src/thesis.egg-info/SOURCES.txt
+src/thesis.egg-info/dependency_links.txt
+src/thesis.egg-info/requires.txt
+src/thesis.egg-info/top_level.txt

@@ -1,0 +1,5 @@
+Weekly sales must be zero or greater. Negative values are not valid.
+The Date column must be a valid calendar date and must not be in the future.
+Each combination of Store, Dept, and Date should appear only once in the dataset.
+If IsHoliday is True, the corresponding Weekly_Sales should not be zero.
+Store and Department identifiers must be positive integers.
