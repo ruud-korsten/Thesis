@@ -1,13 +1,12 @@
 import streamlit as st
-import os
 import pandas as pd
-import json
-from streamlit_app.utils.dataset_helper import filter_and_highlight
-from streamlit_app.utils.load_summary import (
+from utils.dataset_helper import filter_and_highlight
+from utils.load_summary import (
     load_dataset_and_mask,
     load_summary_files,
     load_rule_and_note_definitions,
 )
+from utils.session_state_helper import clear_all_filters
 
 
 def render_summary_tab(summary, selected_display_name, dq_card):
@@ -123,12 +122,8 @@ def render_detailed_tab_with_interactions(run_path):
         st.header("Filters")
 
         if st.button("Clear All Filters"):
-            for rule in rules:
-                st.session_state[f"checkbox_rule_{rule['id']}"] = False
-            for note in notes:
-                st.session_state[f"checkbox_note_{note['id']}"] = False
-            st.session_state["checkbox_missing"] = False
-            st.session_state["checkbox_duplicates"] = False
+            clear_all_filters(rules, notes)
+
         st.markdown("---")
 
         st.subheader("Rules")
