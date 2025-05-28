@@ -1,0 +1,3 @@
+1. Very extreme outliers in the value column per building and source combination could be wrong sensor readings and should be flagged.
+
+2. Give a description of each unique type of sensor based on the name in the source column

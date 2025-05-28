@@ -1,0 +1,8 @@
+1. **Inferred Domain Knowledge**
+
+- `InvoiceNo`: Unique ID; represents a unique identifier for each invoice transaction. Must be filled and unique.
+- `StockCode`: Categorical; denotes the unique code assigned to each product. Should be filled and unique per product.
+- `InvoiceDate`: Timestamp; indicates the date and time when the invoice was generated. Must be in a valid datetime format.
+- `UnitPrice`: Numerical; represents the price per unit of the product. Must be a non-negative value.
+- `CustomerID`: Unique ID; identifies each customer uniquely. Should be filled and unique for each customer.
+- `Country`: Categorical; specifies the country where the customer is located. Must be filled and should match a predefined list of country names.

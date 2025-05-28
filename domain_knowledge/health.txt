@@ -1,0 +1,13 @@
+1. **Inferred Domain Knowledge**
+
+- `Patient_ID`: Unique ID for each patient. Must be filled, unique, and is a numerical identifier.
+- `Age`: Numerical; represents the age of the patient in years. Must be a positive integer, typically ranging from 18 to 90.
+- `Gender`: Categorical; indicates the gender of the patient, typically "Male" or "Female". Must be filled and one of the predefined categories.
+- `Hospital_ID`: Unique ID for each hospital. Must be filled and unique, serving as an identifier for the hospital.
+- `Hospital_Name`: Categorical; represents the name of the hospital where the patient is receiving treatment. Must be filled and is expected to match the `Hospital_ID`.
+- `Location`: Categorical; indicates the geographical location of the hospital. Must be filled and is expected to be a valid place name.
+- `Diagnosis`: Categorical; lists the medical conditions diagnosed in the patient. Must be filled and can include multiple conditions.
+- `Symptoms`: Categorical; describes the symptoms experienced by the patient. Must be filled and can include multiple symptoms.
+- `Medications`: Categorical; lists the medications prescribed to the patient. Must be filled and can include multiple medications.
+- `Doctor_Notes`: Categorical; contains notes or recommendations from the doctor regarding the patient's treatment. Must be filled and provide relevant medical advice.
+- `Lab_Results`: Categorical; provides results from laboratory tests conducted on the patient. Must be filled and should include specific test results with units where applicable.

@@ -1,0 +1,6 @@
+{
+  "`InvoiceNo` should be unique for each invoice transaction.": "def check_duplicate_invoice_numbers(df):\n    return df.duplicated(subset='InvoiceNo', keep=False)",
+  "`StockCode` should be unique per product.": "def check_duplicate_stockcode(df):\n    return df.duplicated(subset='StockCode', keep=False)",
+  "`CustomerID` should be unique for each customer.": "def check_duplicate_customer_ids(df):\n    duplicate_customer_ids = df['CustomerID'].duplicated(keep=False)\n    return duplicate_customer_ids",
+  "`Country` should match a predefined list of country names.": "def check_invalid_countries(df):\n    predefined_countries = [\n        \"United States\", \"Canada\", \"United Kingdom\", \"Germany\", \"France\", \n        \"Italy\", \"Spain\", \"Australia\", \"Japan\", \"China\"\n    ]\n    return ~df['Country'].isin(predefined_countries)"
+}

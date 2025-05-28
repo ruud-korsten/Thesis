@@ -1,0 +1,6 @@
+[
+  "`InvoiceNo` should be unique for each invoice transaction.",
+  "`StockCode` should be unique per product.",
+  "`CustomerID` should be unique for each customer.",
+  "`Country` should match a predefined list of country names."
+]

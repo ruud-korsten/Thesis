@@ -1,0 +1,54 @@
+[
+  {
+    "id": "R001",
+    "name": "InvoiceNo Not Null",
+    "type": "not_null",
+    "column": "InvoiceNo",
+    "condition": {},
+    "message": "InvoiceNo must not contain missing values."
+  },
+  {
+    "id": "R002",
+    "name": "StockCode Not Null",
+    "type": "not_null",
+    "column": "StockCode",
+    "condition": {},
+    "message": "StockCode must not contain missing values."
+  },
+  {
+    "id": "R003",
+    "name": "InvoiceDate Valid Format",
+    "type": "pattern",
+    "column": "InvoiceDate",
+    "condition": {
+      "pattern": "valid datetime format"
+    },
+    "message": "InvoiceDate must be in a valid datetime format."
+  },
+  {
+    "id": "R004",
+    "name": "UnitPrice Non-negative",
+    "type": "range",
+    "column": "UnitPrice",
+    "condition": {
+      "min": 0
+    },
+    "message": "UnitPrice must be a non-negative value."
+  },
+  {
+    "id": "R005",
+    "name": "CustomerID Not Null",
+    "type": "not_null",
+    "column": "CustomerID",
+    "condition": {},
+    "message": "CustomerID must not contain missing values."
+  },
+  {
+    "id": "R006",
+    "name": "Country Not Null",
+    "type": "not_null",
+    "column": "Country",
+    "condition": {},
+    "message": "Country must not contain missing values."
+  }
+]
