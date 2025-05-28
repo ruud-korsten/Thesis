@@ -3,6 +3,12 @@ import os
 import pandas as pd
 import json
 from streamlit_app.utils.dataset_helper import filter_and_highlight
+from streamlit_app.utils.load_summary import (
+    load_dataset_and_mask,
+    load_summary_files,
+    load_rule_and_note_definitions,
+)
+
 
 def render_summary_tab(summary, selected_display_name, dq_card):
     st.title(f"Data Quality Report: {selected_display_name}")
@@ -73,23 +79,13 @@ def clear_all_filters(rules, notes):
 def render_detailed_tab_with_interactions(run_path):
     st.title("Detailed Report")
 
-    dataset_path = os.path.join(run_path, "dataset.csv")
-    mask_path = os.path.join(run_path, "prediction_mask.csv")
     try:
-        dataset = pd.read_csv(dataset_path)
-        pred_mask = pd.read_csv(mask_path)
-    except Exception as e:
-        st.error(f"Failed to load dataset or prediction mask: {e}")
+        dataset, pred_mask = load_dataset_and_mask(run_path)
+        rule_summary, note_summary = load_summary_files(run_path)
+        rule_defs, note_descs = load_rule_and_note_definitions(run_path)
+    except RuntimeError as e:
+        st.error(str(e))
         return
-
-    rule_summary = pd.read_csv(os.path.join(run_path, "rule_summary.csv"))
-    note_summary = pd.read_csv(os.path.join(run_path, "note_summary.csv"))
-
-    with open(os.path.join(run_path, "rules.json")) as f:
-        rule_defs = json.load(f)
-
-    with open(os.path.join(run_path, "note_functions.json")) as f:
-        note_descs = json.load(f)
 
     rules = []
     for rule in rule_defs:
@@ -127,16 +123,18 @@ def render_detailed_tab_with_interactions(run_path):
         st.header("Filters")
 
         if st.button("Clear All Filters"):
-            clear_all_filters(rules, notes)
-
+            for rule in rules:
+                st.session_state[f"checkbox_rule_{rule['id']}"] = False
+            for note in notes:
+                st.session_state[f"checkbox_note_{note['id']}"] = False
+            st.session_state["checkbox_missing"] = False
+            st.session_state["checkbox_duplicates"] = False
         st.markdown("---")
 
         st.subheader("Rules")
         visible_rule_count = len([r for r in rules if r["violations"] > 0])
         total_rule_count = len(rules)
         st.checkbox(f"Display all rules ({visible_rule_count} of {total_rule_count} shown)", key="show_all_rules")
-        st.markdown("<div style='margin-bottom: 0.5em'></div>", unsafe_allow_html=True)
-        st.markdown("<span style='font-size: 0.9em; color: gray;'>Rules:</span>", unsafe_allow_html=True)
         visible_rules = rules if st.session_state["show_all_rules"] else [r for r in rules if r["violations"] > 0]
         for rule in visible_rules:
             key = f"checkbox_rule_{rule['id']}"
@@ -148,8 +146,6 @@ def render_detailed_tab_with_interactions(run_path):
         visible_note_count = len([n for n in notes if n["violations"] > 0])
         total_note_count = len(notes)
         st.checkbox(f"Display all notes ({visible_note_count} of {total_note_count} shown)", key="show_all_notes")
-        st.markdown("<div style='margin-bottom: 0.5em'></div>", unsafe_allow_html=True)
-        st.markdown("<span style='font-size: 0.9em; color: gray;'>Notes:</span>", unsafe_allow_html=True)
         visible_notes = notes if st.session_state["show_all_notes"] else [n for n in notes if n["violations"] > 0]
         for note in visible_notes:
             key = f"checkbox_note_{note['id']}"
@@ -157,14 +153,13 @@ def render_detailed_tab_with_interactions(run_path):
             st.checkbox(label, key=key)
         st.markdown("---")
 
-        st.subheader("General Filters:")
+        st.subheader("General Filters")
         st.checkbox("Missing Values", key="checkbox_missing")
         st.checkbox("Duplicates", key="checkbox_duplicates")
 
     with cols[0]:
         st.header("Dataset Viewer")
 
-        # Collect active items
         active_rules = [r for r in rules if st.session_state.get(f"checkbox_rule_{r['id']}", False)]
         active_notes = [n for n in notes if st.session_state.get(f"checkbox_note_{n['id']}", False)]
 
