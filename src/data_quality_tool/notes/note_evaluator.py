@@ -1,5 +1,6 @@
 import pandas as pd
-from data_quality_tool.logging_config import get_logger
+
+from data_quality_tool.config.logging_config import get_logger
 
 logger = get_logger()
 
@@ -7,11 +8,13 @@ logger = get_logger()
 class NoteEvaluator:
     def __init__(self, df: pd.DataFrame):
         self.df = df
-        self.results = {}
+        self.passed = {}
+        self.failed = {}
         logger.debug("NoteEvaluator initialized with DataFrame of shape %s", df.shape)
 
     def evaluate(self, note_functions: dict[str, str]) -> dict[str, dict]:
-        self.results = {}
+        self.passed = {}
+        self.failed = {}
 
         for idx, (note, code) in enumerate(note_functions.items()):
             note_id = f"N{idx + 1:03d}"
@@ -19,10 +22,10 @@ class NoteEvaluator:
             local_env = {}
 
             try:
-                # Ensure pandas is available
+                # Run the function code
                 exec(code, {"pd": pd}, local_env)
 
-                # Find the first callable in the local env
+                # Get first callable
                 func = next((v for v in local_env.values() if callable(v)), None)
                 if func is None:
                     raise ValueError("No valid function was defined in the code block.")
@@ -38,22 +41,27 @@ class NoteEvaluator:
 
                 num_flags = result.sum()
 
-                self.results[note] = {
+                self.passed[note] = {
                     "id": note_id,
                     "violations": int(num_flags),
                     "function_name": func.__name__,
                     "violations_mask": result,
-                    "code": code
+                    "code": code,
                 }
 
                 logger.info("%s flagged %d rows", func.__name__, num_flags)
 
             except Exception as e:
-                logger.warning("Skipping note check %s due to error: %s", note_id, str(e))
-                self.results[note] = {
+                error_msg = str(e)
+                logger.warning("Skipping note check %s due to error: %s", note_id, error_msg)
+
+                self.failed[note] = {
                     "id": note_id,
-                    "error": str(e),
-                    "code": code
+                    "code": code,
+                    "error": error_msg,
                 }
 
-        return self.results
+        return {
+            "passed": self.passed,
+            "failed": self.failed,
+        }

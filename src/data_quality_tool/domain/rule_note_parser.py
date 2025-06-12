@@ -1,18 +1,19 @@
 import json
 import os
-import pandas as pd
 import re
 
-from data_quality_tool.llm.llm_client import LLMClient
-from data_quality_tool.llm.prompt_builder import build_rule_extraction_prompt
-from .rule_rci_agent import RuleRCIAgent
+import pandas as pd
+
 from data_quality_tool.config.logging_config import get_logger
+from data_quality_tool.llm.llm_client import LLMClient
+from data_quality_tool.llm.rule_extraction_prompt import build_rule_extraction_messages
+from data_quality_tool.rules.rule_rci_agent import RuleRCIAgent
 
 logger = get_logger()
 
 
 class RuleParser:
-    def __init__(self, model: str = None, temperature: float = 0.2):
+    def __init__(self, model: str = None, temperature: float = 0.0):
         self.llm = LLMClient(model=model, temperature=temperature)
         self.rci = RuleRCIAgent(self.llm)
         logger.info("RuleParser initialized with model='%s' and temperature=%.2f", model or "default", temperature)
@@ -48,15 +49,15 @@ class RuleParser:
             rules_path: str,
             df: pd.DataFrame,
             use_rci: bool = True,
-            cache_path: str = "dq_rules.json",
+            cache_path: str = "artifacts/dq_rules.json",
             force_refresh: bool = False
     ) -> tuple[list[dict], list[str]]:
         if not force_refresh and os.path.exists(cache_path):
             logger.info("Using cached rules from %s", cache_path)
             with open(cache_path) as f:
                 rules = json.load(f)
-            if os.path.exists("dq_notes.json"):
-                with open("dq_notes.json") as f:
+            if os.path.exists("artifacts/dq_notes.json"):
+                with open("artifacts/dq_notes.json") as f:
                     notes = json.load(f)
             else:
                 notes = []
@@ -68,20 +69,20 @@ class RuleParser:
         with open(rules_path, encoding="utf-8") as f:
             domain_text = f.read().strip()
 
-        prompt = build_rule_extraction_prompt(domain_text, df.columns.tolist())
+        messages  = build_rule_extraction_messages(domain_text, df.columns.tolist())
         logger.info("Running rule extraction...")
 
         if use_rci:
-            result = self.rci.run_rci_pipeline(prompt, domain_text, df.columns.tolist())
+            result = self.rci.run_rci_pipeline(messages, domain_text, df.columns.tolist())
             raw_response = result["improved_output"]
         else:
-            raw_response = self.llm.call(prompt)
+            raw_response = self.llm.call(messages=messages)
 
         rules, notes = self.split_llm_response(raw_response)
 
         with open(cache_path, "w") as f:
             json.dump(rules, f, indent=2)
-        with open("dq_notes.json", "w") as f:
+        with open("artifacts/dq_notes.json", "w") as f:
             json.dump(notes, f, indent=2)
 
         logger.info("Extracted %d rules and %d notes", len(rules), len(notes))

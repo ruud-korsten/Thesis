@@ -1,5 +1,33 @@
-Weekly sales must be zero or greater. Negative values are not valid.
-The Date column must be a valid calendar date and must not be in the future.
-Each combination of Store, Dept, and Date should appear only once in the dataset.
-If IsHoliday is True, the corresponding Weekly_Sales should not be zero.
-Store and Department identifiers must be positive integers.
+1. **Store**  
+   - Meaning: Represents a unique identifier for each store.
+   - Data Type: Unique ID.
+   - Data Quality Expectations:
+     - Must be a positive integer within the range 1 to 45, inclusive.
+     - Values outside this range should be flagged as potentially invalid.
+
+2. **Dept**  
+   - Meaning: Represents a unique identifier for each department within a store.
+   - Data Type: Unique ID.
+   - Data Quality Expectations:
+     - Must be a positive integer within the range 1 to 99, inclusive.
+     - Values outside this range should be flagged as potentially invalid.
+
+3. **Date**  
+   - Meaning: Represents the date of the sales data entry.
+   - Data Type: Timestamp.
+   - Data Quality Expectations:
+     - Must follow the format `YYYY-MM-DD`.
+     - Must be a valid date; non-existent dates like `2021-02-30` should be flagged.
+
+4. **Weekly_Sales**  
+   - Meaning: Represents the total sales for a department in a store for a specific week.
+   - Data Type: Numerical.
+   - Data Quality Expectations:
+     - Must be a non-negative value; negative sales should be flagged as potentially erroneous.
+     - Extreme outliers, such as values more than 5 standard deviations from the mean, should be flagged for review.
+
+5. **IsHoliday**  
+   - Meaning: Indicates whether the sales data corresponds to a holiday week.
+   - Data Type: Categorical (Boolean).
+   - Data Quality Expectations:
+     - Must be either `True` or `False`. Any other values should be flagged as invalid.

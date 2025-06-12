@@ -1,15 +1,16 @@
-import os
 import json
-from typing import List, Dict
-from .llm_client import LLMClient
+import os
+import pandas as pd
+from data_quality_tool.config.logging_config import get_logger
+from data_quality_tool.llm.llm_client import LLMClient
+
 from .note_rci_agent import NoteRCIAgent
-from data_quality_tool.logging_config import get_logger
 
 logger = get_logger()
 
 
 class NoteEngine:
-    def __init__(self, model: str = None, temperature: float = 0.2):
+    def __init__(self, model: str = None, temperature: float = 1.0):
         self.llm = LLMClient(model=model, temperature=temperature)
         self.rci = NoteRCIAgent(self.llm)
         logger.info("NoteEngine initialized with model='%s' and temperature=%.2f", model or "default", temperature)
@@ -20,54 +21,77 @@ class NoteEngine:
             return "\n".join(line for line in lines if not line.strip().startswith("```")).strip()
         return code.strip()
 
-    def build_prompt(self, note: str, df_columns: List[str]) -> str:
-        return f"""
-You are a data quality assistant.
+    def build_prompt(self, note: str, df: pd.DataFrame) -> list[dict]:
+        column_info = "\n".join(f"- `{col}` ({dtype})" for col, dtype in df.dtypes.items())
+        sample = df.head(10).to_markdown(index=False)
 
-Based on the following domain note, generate a Python-based data quality check function that can be applied to a pandas DataFrame.
+        system_message = {
+            "role": "system",
+            "content": (
+                "You are a data quality assistant. "
+                "Your task is to translate clear domain notes into Python functions that check for violations in a dataset. "
+                "Only use information supported by the note, schema, or sample — avoid guessing or assumptions."
+            )
+        }
 
----
+        user_message = {
+            "role": "user",
+            "content": f"""
+    Write a Python function based on the domain note below.
 
-Note:
-"{note}"
+    ---
 
-Available Columns:
-{', '.join(df_columns)}
+    Domain Note:
+    "{note}"
 
-The output must be a **Python function** that:
+    Available Columns:
+    {column_info}
 
-- Takes a pandas DataFrame as input (`df`)
-- Returns a pandas Series of booleans where `True` means a row violates the check
-- Uses only standard pandas and Python logic (no external libraries)
+    ---
 
-Don't import pandas. Just return the function.
-Name the function descriptively. Do not include markdown or explanations.
-""".strip()
+    Requirements:
 
-    def generate_check(self, note: str, df_columns: List[str], use_rci: bool = False) -> str:
+    - The function must:
+      - Accept a pandas DataFrame `df` as input
+      - Return a pandas Series of booleans where `True` means the row **violates** the rule
+      - Be vectorized using standard pandas syntax (no `.apply`)
+      - Use only the listed columns (with exact names)
+      - Be named descriptively using snake_case (e.g., `check_value_in_range`)
+
+    - Do not:
+      - Import pandas or any library
+      - Include comments, markdown, or explanations
+
+    Only return the function code.
+    """.strip()
+        }
+
+        return [system_message, user_message]
+
+    def generate_check(self, note: str, df: list[str], use_rci: bool = False) -> str:
         logger.info("Generating check for note: %s", note)
-        prompt = self.build_prompt(note, df_columns)
-        raw_code = self.llm.call(prompt)
+        messages = self.build_prompt(note, df)
+        raw_code = self.llm.call(messages=messages)
         clean_code = self.strip_code_fencing(raw_code)
 
         if use_rci:
             logger.debug("Running RCI refinement for note.")
-            result = self.rci.run_note_rci(note, clean_code, df_columns)
+            result = self.rci.run_note_rci(note, clean_code, df)
             return self.strip_code_fencing(result["improved"])
         return clean_code
 
-    def run(self, notes: List[str], df_columns: List[str], cache_path: str = "note_functions.json",
-            force_refresh: bool = False, use_rci: bool = False) -> Dict[str, str]:
+    def run(self, notes: list[str], df: list[str], cache_path: str = "note_functions.json",
+            force_refresh: bool = False, use_rci: bool = False) -> dict[str, str]:
         if not force_refresh and os.path.exists(cache_path):
             logger.info("Using cached note functions from %s", cache_path)
-            with open(cache_path, "r") as f:
+            with open(cache_path) as f:
                 return json.load(f)
 
         checks = {}
         for note in notes:
             logger.info("Processing note: %s", note)
             try:
-                code = self.generate_check(note, df_columns, use_rci=use_rci)
+                code = self.generate_check(note, df, use_rci=use_rci)
                 logger.debug("Generated function:\n%s", code)
                 checks[note] = code
             except Exception as e:

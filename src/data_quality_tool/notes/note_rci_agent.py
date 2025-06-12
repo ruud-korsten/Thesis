@@ -1,6 +1,6 @@
-from typing import List
-from .llm_client import LLMClient
-from data_quality_tool.logging_config import get_logger
+
+from data_quality_tool.config.logging_config import get_logger
+from data_quality_tool.llm.llm_client import LLMClient
 
 logger = get_logger()
 
@@ -10,7 +10,7 @@ class NoteRCIAgent:
         self.llm = llm_client
         logger.debug("NoteRCIAgent initialized with LLM client: %s", type(llm_client).__name__)
 
-    def build_critique_prompt(self, note: str, function_code: str, df_columns: List[str]) -> str:
+    def build_critique_prompt(self, note: str, function_code: str, df_columns: list[str]) -> str:
         return (
             "You are a senior Python code reviewer and data quality engineer.\n\n"
             "Please critique the following function generated for a data quality note.\n\n"
@@ -30,7 +30,7 @@ class NoteRCIAgent:
             "Respond with a clear, constructive critique and suggest specific improvements if needed."
         )
 
-    def build_improvement_prompt(self, note: str, original_code: str, critique: str, df_columns: List[str]) -> str:
+    def build_improvement_prompt(self, note: str, original_code: str, critique: str, df_columns: list[str]) -> str:
         return (
             "You are a data validation assistant.\n\n"
             "Improve the following Python function based on the critique below.\n\n"
@@ -46,7 +46,7 @@ class NoteRCIAgent:
             "Don't import pandas. Just return the function."
         )
 
-    def run_note_rci(self, note: str, raw_code: str, df_columns: List[str]) -> dict:
+    def run_note_rci(self, note: str, raw_code: str, df_columns: list[str]) -> dict:
         logger.info("Running RCI for note: %s", note)
         logger.debug("Initial raw code:\n%s", raw_code)
 

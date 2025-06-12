@@ -1,10 +1,22 @@
-import pandas as pd
+import os
 import numpy as np
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
-from data_quality_tool.config.logging_config import get_logger  # Assumes you have a logging_config module
+import pandas as pd
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+
+from data_quality_tool.config.logging_config import (
+    get_logger,  # Assumes you have a logging_config module
+)
 
 logger = get_logger()
 
+def get_ground_truth_mask_path(dataset_name: str, dirty: bool = True, mask_filename: str = None) -> str:
+    """
+    Dynamically constructs the ground truth mask path based on dataset name and dirty flag.
+    """
+    subfolder = "dirty" if dirty else "raw"
+    default_filename = f"{dataset_name}_dq_mask.xlsx"
+    filename = mask_filename or default_filename
+    return os.path.join("data", dataset_name, subfolder, filename)
 
 def load_mask(file_path: str) -> pd.DataFrame:
     """Loads a mask file (CSV or Excel) and normalizes its values to booleans."""
@@ -23,49 +35,88 @@ def load_mask(file_path: str) -> pd.DataFrame:
         raise
 
     # Normalize values: treat non-FALSE/NaN values as violations
-    normalized_df = df.applymap(lambda x: False if pd.isna(x) or str(x).strip().upper() == "FALSE" else True)
+    normalized_df = df.astype(object)
 
     logger.debug("Loaded mask shape: %s, columns: %s", normalized_df.shape, list(normalized_df.columns))
     return normalized_df
 
 
 def evaluate_dq_performance(true_mask: pd.DataFrame, pred_mask: pd.DataFrame) -> dict:
-    """Calculates performance metrics comparing true and predicted masks, with detailed validation."""
-    logger.info("Evaluating DQ performance...")
-
-    # Shape and Column Validation
     if true_mask.shape != pred_mask.shape:
-        logger.error("Shape mismatch. True mask shape: %s, Predicted mask shape: %s", true_mask.shape, pred_mask.shape)
-        raise ValueError("Shape mismatch between true and predicted masks.")
+        logger.error("Shape mismatch detected:")
+        logger.error("True mask shape: %s", true_mask.shape)
+        logger.error("Pred mask shape: %s", pred_mask.shape)
+        raise ValueError("Shape mismatch")
     if not all(true_mask.columns == pred_mask.columns):
-        mismatched_cols = [col for col in true_mask.columns if col not in pred_mask.columns]
-        logger.error("Column mismatch detected. Mismatched columns: %s", mismatched_cols)
-        raise ValueError("Column mismatch between true and predicted masks.")
+        raise ValueError("Column mismatch")
 
-    y_true = true_mask.values.flatten()
-    y_pred = pred_mask.values.flatten()
+    issue_types = ['missing', 'type_mismatch', 'outliers', 'duplicates']
+    issue_summary = {}
 
-    # Sanity Checks
-    logger.debug("Total Cells Evaluated: %d", len(y_true))
-    logger.debug("True Violations Count: %d", np.sum(y_true))
-    logger.debug("Predicted Violations Count: %d", np.sum(y_pred))
+    for issue in issue_types:
+        injected = true_mask.applymap(lambda x: issue in str(x).split(",") if pd.notna(x) else False)
+        inserted_count = int(injected.values.sum())
+        detected_count = int(((injected) & pred_mask.notna()).values.sum())
 
-    if np.all(y_true == False):
-        logger.warning("True mask has no violations (all FALSE). Check if ground truth is correct.")
+        issue_summary[issue] = {
+            "inserted": inserted_count,
+            "detected": detected_count,
+            "detection_rate": round(detected_count / inserted_count, 4) if inserted_count > 0 else 0.0,
+        }
 
-    if np.all(y_pred == False):
-        logger.warning("Predicted mask has no violations (all FALSE). The model may not be detecting any issues.")
+    # === Binary mask for evaluation ===
+    true_binary = true_mask.applymap(lambda x: pd.notna(x) and x != "noop")
+    pred_binary = pred_mask.notna()
 
-    # Compute Metrics
-    metrics = {
-        "accuracy": accuracy_score(y_true, y_pred),
-        "precision": precision_score(y_true, y_pred, zero_division=0),
-        "recall": recall_score(y_true, y_pred, zero_division=0),
-        "f1_score": f1_score(y_true, y_pred, zero_division=0),
+    y_true = true_binary.values.flatten().astype(int)
+    y_pred = pred_binary.values.flatten().astype(int)
+
+    tp = int(np.sum((y_true == 1) & (y_pred == 1)))
+    fp = int(np.sum((y_true == 0) & (y_pred == 1)))
+    fn = int(np.sum((y_true == 1) & (y_pred == 0)))
+    tn = int(np.sum((y_true == 0) & (y_pred == 0)))
+
+    logger.debug("Total issue cells in true_mask (excluding 'noop'): %d", true_binary.values.sum())
+    logger.debug("Total predicted issue cells: %d", pred_binary.values.sum())
+    logger.debug("TP: %d | FP: %d | FN: %d | TN: %d", tp, fp, fn, tn)
+
+    # === Optional: Sample false negatives ===
+    missed_mask = (true_binary == 1) & (pred_binary == 0)
+    missed_cells = missed_mask[missed_mask].stack()
+    logger.debug("False negative (missed) cell count: %d", len(missed_cells))
+    logger.debug("Sample false negatives (up to 10):\n%s", missed_cells.head(10))
+
+    # === Optional: Save full missed set for debugging ===
+    missed_df = true_mask.copy()
+    for col in missed_df.columns:
+        missed_df[col] = missed_df[col].where(missed_mask[col], None)
+    missed_df = missed_df.dropna(how='all')
+    missed_df.to_csv("artifacts/false_negatives.csv", index=False)
+    logger.info("Saved missed prediction cells to artifacts/false_negatives.csv")
+
+    # === Final metrics ===
+    overall_metrics = {
+        "true_positives": tp,
+        "false_positives": fp,
+        "false_negatives": fn,
+        "true_negatives": tn,
+        "accuracy": float(accuracy_score(y_true, y_pred)),
+        "precision": float(precision_score(y_true, y_pred, zero_division=0)),
+        "recall": float(recall_score(y_true, y_pred, zero_division=0)),
+        "f1_score": float(f1_score(y_true, y_pred, zero_division=0)),
     }
 
-    logger.info("Evaluation Results: %s", metrics)
-    return metrics
+    summary_df = pd.DataFrame(issue_summary).T
+    logger.info("\nDQ Issue Detection Summary:\n%s", summary_df.to_string())
+
+    metrics_df = pd.DataFrame([overall_metrics], index=["overall"]).round(4)
+    logger.info("\nDQ Overall Accuracy Metrics:\n%s", metrics_df.to_string())
+
+    return {
+        "issue_detection_summary": issue_summary,
+        "overall_metrics": overall_metrics
+    }
+
 
 
 def evaluate_from_files(true_mask_path: str, pred_mask_path: str) -> dict:

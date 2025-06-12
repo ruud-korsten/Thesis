@@ -1,7 +1,9 @@
 import os
+
 import openai
 from dotenv import load_dotenv
-from data_quality_tool.logging_config import get_logger
+
+from data_quality_tool.config.logging_config import get_logger
 
 logger = get_logger()
 
@@ -15,12 +17,18 @@ class LLMClient:
         self.temperature = temperature
         logger.info("Initialized LLMClient with model='%s' and temperature=%.2f", self.model, self.temperature)
 
-    def call(self, prompt: str) -> str:
-        logger.debug("Calling LLM with prompt length: %d", len(prompt))
+    def call(self, prompt: str = None, messages: list[dict] = None) -> str:
+        if not prompt and not messages:
+            raise ValueError("You must provide either a prompt or a messages list.")
+
+        if messages is None:
+            messages = [{"role": "user", "content": prompt}]
+
+        logger.debug("Calling LLM with %d messages", len(messages))
         try:
             response = openai.ChatCompletion.create(
                 model=self.model,
-                messages=[{"role": "user", "content": prompt}],
+                messages=messages,
                 temperature=self.temperature,
             )
             result = response['choices'][0]['message']['content'].strip()

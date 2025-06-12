@@ -1,54 +1,81 @@
 [
   {
     "id": "R001",
-    "name": "InvoiceNo Not Null",
+    "name": "InvoiceNo must not be null",
     "type": "not_null",
     "column": "InvoiceNo",
     "condition": {},
-    "message": "InvoiceNo must not contain missing values."
+    "message": "InvoiceNo must be a non-null, non-empty string or integer."
   },
   {
     "id": "R002",
-    "name": "StockCode Not Null",
-    "type": "not_null",
-    "column": "StockCode",
+    "name": "InvoiceNo pattern restriction",
+    "type": "pattern",
+    "column": "InvoiceNo",
     "condition": {},
-    "message": "StockCode must not contain missing values."
+    "message": "InvoiceNo should not contain any special characters or spaces."
   },
   {
     "id": "R003",
-    "name": "InvoiceDate Valid Format",
-    "type": "pattern",
-    "column": "InvoiceDate",
-    "condition": {
-      "pattern": "valid datetime format"
-    },
-    "message": "InvoiceDate must be in a valid datetime format."
+    "name": "StockCode must not be null",
+    "type": "not_null",
+    "column": "StockCode",
+    "condition": {},
+    "message": "StockCode must be a non-null, non-empty string."
   },
   {
     "id": "R004",
-    "name": "UnitPrice Non-negative",
-    "type": "range",
-    "column": "UnitPrice",
-    "condition": {
-      "min": 0
-    },
-    "message": "UnitPrice must be a non-negative value."
+    "name": "StockCode pattern restriction",
+    "type": "pattern",
+    "column": "StockCode",
+    "condition": {},
+    "message": "StockCode should not contain any special characters, except for known patterns like alphanumeric codes."
   },
   {
     "id": "R005",
-    "name": "CustomerID Not Null",
-    "type": "not_null",
-    "column": "CustomerID",
-    "condition": {},
-    "message": "CustomerID must not contain missing values."
+    "name": "Quantity must be positive",
+    "type": "range",
+    "column": "Quantity",
+    "condition": {
+      "min": 1
+    },
+    "message": "Quantity should be greater than or equal to 1."
   },
   {
     "id": "R006",
-    "name": "Country Not Null",
+    "name": "InvoiceDate valid range",
+    "type": "range",
+    "column": "InvoiceDate",
+    "condition": {
+      "min": "2000-01-01",
+      "max": "current_date"
+    },
+    "message": "InvoiceDate should fall within the range of expected business operation dates."
+  },
+  {
+    "id": "R007",
+    "name": "UnitPrice must be positive",
+    "type": "range",
+    "column": "UnitPrice",
+    "condition": {
+      "min": 0.01
+    },
+    "message": "UnitPrice should be greater than zero."
+  },
+  {
+    "id": "R008",
+    "name": "CustomerID must not be null",
+    "type": "not_null",
+    "column": "CustomerID",
+    "condition": {},
+    "message": "CustomerID must be a non-null, non-empty string or integer."
+  },
+  {
+    "id": "R009",
+    "name": "Country must not be null",
     "type": "not_null",
     "column": "Country",
     "condition": {},
-    "message": "Country must not contain missing values."
+    "message": "Country must be a non-null, non-empty string."
   }
 ]

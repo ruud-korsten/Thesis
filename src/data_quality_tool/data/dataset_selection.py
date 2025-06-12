@@ -1,22 +1,31 @@
 import os
-import pandas as pd
 
-from .db import fetch_table
-from data_quality_tool.logging_config import get_logger
-from .dq_injection import HealthcareDQInjector, RetailDQInjector  # ✅ Correct imports
+import pandas as pd
+from dotenv import load_dotenv
+
+from data_quality_tool.config.logging_config import get_logger
+from data_quality_tool.data.db import fetch_table
+from data_quality_tool.data.dq_injection import (
+    HealthcareDQInjector,
+    RetailDQInjector,
+    WallmartDQInjector,
+)
 
 logger = get_logger()
+
+load_dotenv()
+INJECTION_FORCE_REFRESH = os.getenv("INJECTION_FORCE_REFRESH", "False").lower() == "true"
 
 try:
     from datasets import load_dataset as hf_load_dataset
 except ImportError:
+    hf_load_dataset = None
     hf_load_dataset = None
     logger.warning("Hugging Face 'datasets' library is not installed.")
 
 DATA_ROOT = "data"
 DOMAIN_ROOT = "domain_knowledge"
 
-# === Dataset Loader Registry ===
 DATASET_LOADERS = {
     "retail": lambda: load_local_excel("retail", "retail.xlsx"),
     "energy": lambda: load_postgres_table("public_grafana_ovvia.energy_highfrequent", "test", "energy.txt"),
@@ -27,63 +36,78 @@ DATASET_LOADERS = {
     "mqtt": lambda: load_postgres_table("public.mqtt_aggregate", "production", "mqtt.txt"),
 }
 
-# === DQ Injection Class Registry ===
 DQ_INJECTORS = {
     "health": HealthcareDQInjector,
     "retail": RetailDQInjector,
-    # Add other dataset-specific injectors here
+    "wallmart": WallmartDQInjector,
 }
 
 
-def load_dataset(name: str, dirty: bool = False, output_format: str = "xlsx") -> tuple[pd.DataFrame, str]:
+def load_dataset(name: str, dirty: bool = False, output_format: str = "xlsx") -> tuple[pd.DataFrame, pd.Series, str]:
     logger.info("Loading dataset: %s (dirty=%s)", name, dirty)
     domain_path = os.path.join(DOMAIN_ROOT, f"{name}.txt")
+    output_dir = f"./data/{name}/dirty"
+    dirty_file = os.path.join(output_dir, f"{name}.{output_format}")
+    mask_file = os.path.join(output_dir, f"{name}_dq_mask.{output_format}")
 
     try:
         if name not in DATASET_LOADERS:
             logger.error("Unsupported dataset name: %s", name)
             raise ValueError(f"Unsupported dataset name: {name}")
 
+        if dirty and not INJECTION_FORCE_REFRESH and os.path.exists(dirty_file) and os.path.exists(mask_file):
+            logger.info("Dirty dataset and DQ mask found. Skipping injection. Loading from %s", dirty_file)
+            df = _reload_dirty_dataset(output_dir, name, output_format)
+            expected_dtypes = df.dtypes.copy()  # Schema already preserved in this case
+            return df, expected_dtypes, domain_path
+
+        # Load clean data and capture expected schema before any injection
         df, _ = DATASET_LOADERS[name]()
+        expected_dtypes = df.dtypes.copy()
+
+        logger.debug("Loaded dataset shape: %s", df.shape)
+        logger.debug("Loaded dataset columns: %s", list(df.columns))
+        logger.debug("Loaded dataset dtypes: %s", df.dtypes)
 
         if dirty:
             injector_class = DQ_INJECTORS.get(name)
             if injector_class:
                 injector = injector_class()
-                output_dir = f"./data/{name}/dq_injected_output"
                 injector.inject_errors(df, output_dir, file_prefix=name)
-                # Reload the modified dataset after injection
                 df = _reload_dirty_dataset(output_dir, name, output_format)
             else:
                 logger.warning("No DQ injector registered for dataset '%s'. Skipping injection.", name)
 
-    except Exception as e:
+    except Exception:
         logger.exception("Failed to load dataset: %s", name)
         raise
 
     logger.info("Dataset '%s' loaded successfully with shape %s", name, df.shape)
-    return df, domain_path
+    return df, expected_dtypes, domain_path
+
 
 
 def _reload_dirty_dataset(output_dir: str, name: str, output_format: str) -> pd.DataFrame:
     file_extension = "csv" if output_format == "csv" else "xlsx"
-    dirty_file = os.path.join(output_dir, f"{name}_dirty.{file_extension}")
+    dirty_file = os.path.join(output_dir, f"{name}.{file_extension}")
     logger.info("Reloading dataset from injected dirty file: %s", dirty_file)
     if output_format == "csv":
         return pd.read_csv(dirty_file)
     return pd.read_excel(dirty_file)
 
 
-def load_local_excel(folder: str, filename: str) -> tuple[pd.DataFrame, str]:
-    path = os.path.join(DATA_ROOT, folder, filename)
+def load_local_excel(folder: str, filename: str, dirty: bool = False) -> tuple[pd.DataFrame, str]:
+    subfolder = "dirty" if dirty else "raw"
+    path = os.path.join(DATA_ROOT, folder, subfolder, filename)
     domain_path = os.path.join(DOMAIN_ROOT, f"{folder}.txt")
     logger.debug("Loading Excel file from %s", path)
     df = pd.read_excel(path)
     return df, domain_path
 
 
-def load_local_csv(folder: str, filename: str) -> tuple[pd.DataFrame, str]:
-    path = os.path.join(DATA_ROOT, folder, filename)
+def load_local_csv(folder: str, filename: str, dirty: bool = False) -> tuple[pd.DataFrame, str]:
+    subfolder = "dirty" if dirty else "raw"
+    path = os.path.join(DATA_ROOT, folder, subfolder, filename)
     domain_path = os.path.join(DOMAIN_ROOT, f"{folder}.txt")
     logger.debug("Loading CSV file from %s", path)
     df = pd.read_csv(path)

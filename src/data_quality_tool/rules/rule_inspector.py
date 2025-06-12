@@ -1,5 +1,6 @@
 import pandas as pd
-from data_quality_tool.logging_config import get_logger
+
+from data_quality_tool.config.logging_config import get_logger
 
 logger = get_logger()
 

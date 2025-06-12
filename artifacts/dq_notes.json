@@ -1,6 +1,11 @@
 [
-  "`InvoiceNo` should be unique for each invoice transaction.",
-  "`StockCode` should be unique per product.",
-  "`CustomerID` should be unique for each customer.",
-  "`Country` should match a predefined list of country names."
+  "Unusually high frequency of a single InvoiceNo might indicate data entry errors or duplicate transactions.",
+  "High frequency of certain StockCodes should be reviewed for potential errors or popular items.",
+  "Negative Quantity values would be implausible unless indicating returns, which should be clearly documented.",
+  "Extremely high Quantity values should be flagged for verification, as they might indicate data entry errors.",
+  "Unusual InvoiceDate timestamps (e.g., transactions outside business hours) should be reviewed.",
+  "UnitPrice significantly higher or lower than typical market values should be flagged for review.",
+  "Extremely low or high UnitPrice might indicate data entry errors or special promotions.",
+  "Duplicate CustomerIDs should be reviewed to ensure they represent the same entity.",
+  "Uncommon country names should be checked for spelling errors or incorrect entries."
 ]

@@ -1,6 +1,8 @@
 from collections.abc import Callable
+
 import pandas as pd
-from data_quality_tool.logging_config import get_logger
+
+from data_quality_tool.config.logging_config import get_logger
 
 logger = get_logger()
 
@@ -59,51 +61,59 @@ class RuleExecutor:
         return ~self.df[column].astype(str).str.match(pattern)
 
     def _handle_conditional(self, rule: dict) -> pd.Series:
-        logger.debug("Handling 'conditional' rule: %s", rule.get("id"))
+        rule_id = rule.get("id", "<unknown>")
+        logger.debug("Handling 'conditional' rule: %s", rule_id)
+
         cond = rule.get("condition", {})
         if_cond = cond.get("if", {})
         then_cond = cond.get("then", {})
 
-        if isinstance(if_cond, dict) and "column" in if_cond and "equals" in if_cond:
-            if_col = if_cond["column"]
-            if_val = if_cond["equals"]
-        elif len(if_cond) == 1:
-            if_col, if_val = list(if_cond.items())[0]
-        else:
-            raise ValueError(f"Invalid IF condition format: {if_cond}")
-
-        if if_col not in self.df.columns:
-            raise ValueError(f"IF column '{if_col}' not found in DataFrame")
-
-        mask_if = self.df[if_col] == if_val
-
-        if "column" in then_cond:
-            then_col = then_cond["column"]
-            if then_cond.get("not_null") is True:
-                mask_then = self.df[then_col].isnull()
+        def parse_if_condition(if_block: dict) -> pd.Series:
+            if isinstance(if_block, dict) and "column" in if_block and "equals" in if_block:
+                col, val = if_block["column"], if_block["equals"]
+            elif len(if_block) == 1:
+                col, val = list(if_block.items())[0]
             else:
-                then_check = then_cond.get("condition", {})
-                if not then_check:
-                    raise ValueError(f"No THEN condition specified for column '{then_col}'")
-                mask_then = pd.Series(False, index=self.df.index)
-                if "min" in then_check:
-                    mask_then |= self.df[then_col] < then_check["min"]
-                if "max" in then_check:
-                    mask_then |= self.df[then_col] > then_check["max"]
-        elif len(then_cond) == 1:
-            then_col, cond_body = list(then_cond.items())[0]
-            if then_col not in self.df.columns:
-                raise ValueError(f"THEN column '{then_col}' not found in DataFrame")
-            mask_then = pd.Series(False, index=self.df.index)
-            if "not_null" in cond_body and cond_body["not_null"] is True:
-                mask_then = self.df[then_col].isnull()
+                raise ValueError(f"[{rule_id}] Invalid IF condition: {if_block}")
+
+            if col not in self.df.columns:
+                raise ValueError(f"[{rule_id}] IF column '{col}' not found in DataFrame")
+
+            return self.df[col] == val
+
+        def parse_then_condition(then_block: dict) -> pd.Series:
+            if "column" in then_block:
+                col = then_block["column"]
+                if col not in self.df.columns:
+                    raise ValueError(f"[{rule_id}] THEN column '{col}' not found in DataFrame")
+
+                if then_block.get("not_null") is True:
+                    return self.df[col].isnull()
+
+                condition = then_block.get("condition", {})
+            elif len(then_block) == 1:
+                col, condition = list(then_block.items())[0]
+                if col not in self.df.columns:
+                    raise ValueError(f"[{rule_id}] THEN column '{col}' not found in DataFrame")
+
+                if condition.get("not_null") is True:
+                    return self.df[col].isnull()
             else:
-                if "min" in cond_body:
-                    mask_then |= self.df[then_col] < cond_body["min"]
-                if "max" in cond_body:
-                    mask_then |= self.df[then_col] > cond_body["max"]
-        else:
-            raise ValueError(f"Unsupported THEN condition format: {then_cond}")
+                raise ValueError(f"[{rule_id}] Unsupported THEN format: {then_block}")
+
+            if not condition:
+                raise ValueError(f"[{rule_id}] Empty condition for THEN column '{col}'")
+
+            mask = pd.Series(False, index=self.df.index)
+            if "min" in condition:
+                mask |= self.df[col] < condition["min"]
+            if "max" in condition:
+                mask |= self.df[col] > condition["max"]
+
+            return mask
+
+        mask_if = parse_if_condition(if_cond)
+        mask_then = parse_then_condition(then_cond)
 
         return mask_if & mask_then
 

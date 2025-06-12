@@ -1,137 +1,187 @@
-import pandas as pd
-import numpy as np
+import os
 import random
 from pathlib import Path
-from data_quality_tool.config.logging_config import get_logger  # Proper logger import
+
+import numpy as np
+import pandas as pd
+from dotenv import load_dotenv
+
+from data_quality_tool.config.logging_config import get_logger
 
 logger = get_logger()
 
-MAX_EXCEL_ROWS = 500_000  # Excel export safeguard
+load_dotenv()
+INJECTION_FORCE_REFRESH = os.getenv("INJECTION_FORCE_REFRESH", "False").lower() == "true"
+MAX_EXCEL_ROWS = int(os.getenv("MAX_EXCEL_ROWS", "500000"))
+
+
+def get_error_config():
+    return {
+        'missing': float(os.getenv("ERROR_MISSING", "0.1")),
+        'type_mismatch': float(os.getenv("ERROR_TYPE_MISMATCH", "0.0")),
+        'outliers': float(os.getenv("ERROR_OUTLIERS", "0.0")),
+        'duplicates': float(os.getenv("ERROR_DUPLICATES", "0.0")),
+    }
 
 
 class BaseDQInjector:
     def __init__(self, error_config=None):
-        self.error_config = error_config or {
-            'missing': 0.1,
-            'type_mismatch': 0.005,
-            'outliers': 0.01,
-            'duplicates': 0.01,
-            'format_inconsistency': 0.005
-        }
+        self.error_config = error_config or get_error_config()
 
-    def inject_errors(self, df: pd.DataFrame, output_dir_path: str, file_prefix: str):
-        raise NotImplementedError("This method should be implemented by subclasses.")
+    def _prepare_columns_for_nan(self, df: pd.DataFrame):
+        changed = []
+        for col in df.columns:
+            if pd.api.types.is_integer_dtype(df[col]):
+                df[col] = df[col].astype(float)
+                changed.append((col, 'int -> float'))
+            elif pd.api.types.is_bool_dtype(df[col]):
+                df[col] = df[col].astype(object)
+                changed.append((col, 'bool -> object'))
+            elif isinstance(df[col].dtype, pd.CategoricalDtype):
+                df[col] = df[col].astype(object)
+                changed.append((col, 'category -> object'))
+        logger.info("Columns prepared for NaN injection: %s", changed)
+        return df
 
+    def _sample_if_too_large(self, df: pd.DataFrame) -> pd.DataFrame:
+        if len(df) > MAX_EXCEL_ROWS:
+            logger.warning("Dataset too large. Sampling down to %d rows.", MAX_EXCEL_ROWS)
+            return df.sample(n=MAX_EXCEL_ROWS, random_state=42).reset_index(drop=True)
+        return df
 
-class HealthcareDQInjector(BaseDQInjector):
-    def inject_errors(self, df: pd.DataFrame, output_dir_path: str, file_prefix: str = "health"):
-        logger.info("Starting Healthcare DQ Injection...")
-        self._inject_generic_errors(df, output_dir_path, file_prefix, domain="healthcare")
+    def _should_skip_injection(self, output_dir_path: str, file_prefix: str) -> bool:
+        dirty_file = Path(output_dir_path) / f"{file_prefix}.xlsx"
+        mask_file = Path(output_dir_path) / f"{file_prefix}_dq_mask.xlsx"
+        if not INJECTION_FORCE_REFRESH and dirty_file.exists() and mask_file.exists():
+            logger.info("Skipping injection (cached dirty and mask files exist).")
+            return True
+        return False
 
+    def inject_errors(self, df: pd.DataFrame, output_dir_path: str, file_prefix: str, domain: str):
+        output_dir = Path(output_dir_path)
+        output_dir.mkdir(parents=True, exist_ok=True)
 
-class RetailDQInjector(BaseDQInjector):
-    def inject_errors(self, df: pd.DataFrame, output_dir_path: str, file_prefix: str = "retail"):
-        logger.info("Starting Retail DQ Injection...")
-        self._inject_generic_errors(df, output_dir_path, file_prefix, domain="retail")
-
-
-    def _inject_generic_errors(self, df: pd.DataFrame, output_dir_path: str, file_prefix: str, domain: str):
-        dq_mask = pd.DataFrame(False, index=df.index, columns=df.columns)
+        if self._should_skip_injection(output_dir_path, file_prefix):
+            return
+        expected_dtypes = df.apply(pd.api.types.infer_dtype)
+        df = self._prepare_columns_for_nan(df)
+        dq_mask = pd.DataFrame(np.nan, index=df.index, columns=df.columns, dtype=object)
+        num_rows = len(df)
         num_cells = df.size
-        num_rows, num_cols = df.shape
 
-        # === Missing Values ===
+        # === OUTLIERS ===
+        numeric_cols = df.select_dtypes(include=[np.number]).columns
+        num_outliers = int(self.error_config['outliers'] * num_rows)
+        if num_outliers > 0 and not numeric_cols.empty:
+            logger.info("Injecting %d outliers...", num_outliers)
+            selected_cols = np.random.choice(numeric_cols, size=num_outliers)
+            selected_rows = np.random.choice(df.index, size=num_outliers, replace=False)
+            for col, row in zip(selected_cols, selected_rows):
+                col_mean = df[col].mean()
+                col_std = df[col].std()
+                df.at[row, col] = col_mean + 10 * col_std if pd.notna(col_std) else col_mean
+                dq_mask.at[row, col] = "outliers"
+
+        # === TYPE MISMATCHES ===
+        num_type_errors = int(self.error_config['type_mismatch'] * num_cells)
+        if num_type_errors > 0:
+            logger.info("Injecting %d type mismatches...", num_type_errors)
+
+            numeric_columns = [col for col in df.columns if pd.api.types.is_numeric_dtype(df[col])]
+            if not numeric_columns:
+                logger.warning("No numeric columns found for type mismatch injection.")
+            else:
+                for col in numeric_columns:
+                    df[col] = df[col].astype(object)  # ensure flexibility for string injection
+
+                errors_injected = 0
+                attempts = 0
+                max_attempts = num_type_errors * 10
+
+                while errors_injected < num_type_errors and attempts < max_attempts:
+                    i = random.randint(0, num_rows - 1)
+                    col_name = random.choice(numeric_columns)
+                    j = df.columns.get_loc(col_name)
+
+                    # Avoid overlap with other error types
+                    if pd.isna(dq_mask.iat[i, j]):
+                        df.iat[i, j] = "error_value"
+                        dq_mask.iat[i, j] = "type_mismatch"
+                        errors_injected += 1
+
+                    attempts += 1
+
+                logger.info("Successfully injected %d type mismatches.", errors_injected)
+
+        # === MISSING VALUES ===
         num_missing = int(self.error_config['missing'] * num_cells)
         if num_missing > 0:
             logger.info("Injecting %d missing values...", num_missing)
             missing_indices = np.random.choice(num_cells, size=num_missing, replace=False)
-            rows, cols = np.unravel_index(missing_indices, (num_rows, num_cols))
-            df.values[rows, cols] = np.nan
-            dq_mask.values[rows, cols] = True
+            rows, cols = np.unravel_index(missing_indices, (num_rows, len(df.columns)))
+            for r, c in zip(rows, cols):
+                df.iat[r, c] = np.nan
+                dq_mask.iat[r, c] = "missing"
 
-        # === Type Mismatches ===
-        num_type_errors = int(self.error_config['type_mismatch'] * num_cells)
-        if num_type_errors > 0:
-            logger.info("Injecting %d type mismatches...", num_type_errors)
-            for _ in range(num_type_errors):
-                i, j = random.randint(0, num_rows - 1), random.randint(0, num_cols - 1)
-                col_name = df.columns[j]
-                if pd.api.types.is_numeric_dtype(df[col_name]):
-                    df.iat[i, j] = "error_value"
-                    dq_mask.iat[i, j] = True
-
-        # === Outliers Injection ===
-        if domain == "healthcare" and 'Age' in df.columns:
-            df['Age'] = pd.to_numeric(df['Age'], errors='coerce')
-            num_outliers = int(self.error_config['outliers'] * num_rows)
-            logger.info("Injecting %d age outliers...", num_outliers)
-            outlier_indices = np.random.choice(df.index, size=num_outliers, replace=False)
-            df.loc[outlier_indices, 'Age'] = 999
-            dq_mask.loc[outlier_indices, 'Age'] = True
-
-        numeric_cols = df.select_dtypes(include=[np.number]).columns
-        num_outliers = int(self.error_config['outliers'] * num_rows * len(numeric_cols))
-        if num_outliers > 0 and not numeric_cols.empty:
-            logger.info("Injecting %d numeric outliers...", num_outliers)
-            col_choices = np.random.choice(numeric_cols, size=num_outliers)
-            row_choices = np.random.randint(0, num_rows, size=num_outliers)
-            for col, row in zip(col_choices, row_choices):
-                if not pd.api.types.is_float_dtype(df[col]):
-                    df[col] = pd.to_numeric(df[col], errors='coerce').astype(float)
-                col_mean = df[col].mean()
-                col_std = df[col].std()
-                outlier_value = col_mean + 10 * col_std if pd.notna(col_std) else col_mean
-                df.at[row, col] = outlier_value
-                dq_mask.at[row, col] = True
-
-        # === Duplicates Injection ===
+        # === DUPLICATES ===
         num_duplicates = int(self.error_config['duplicates'] * num_rows)
         if num_duplicates > 0:
             logger.info("Injecting %d duplicate rows...", num_duplicates)
-            duplicate_rows = df.sample(n=num_duplicates, replace=True)
-            df_with_duplicates = pd.concat([df, duplicate_rows], ignore_index=True)
-            dq_mask_with_duplicates = pd.concat(
-                [dq_mask, pd.DataFrame(True, index=range(len(df), len(df) + num_duplicates), columns=df.columns)],
-                ignore_index=True
+            duplicate_rows = df.sample(n=num_duplicates, replace=True, random_state=42)
+            df = pd.concat([df, duplicate_rows], ignore_index=True)
+            duplicate_mask = pd.DataFrame(
+                [["duplicates"] * len(df.columns)] * num_duplicates,
+                columns=df.columns
             )
-        else:
-            df_with_duplicates = df
-            dq_mask_with_duplicates = dq_mask
+            dq_mask = pd.concat([dq_mask, duplicate_mask], ignore_index=True)
 
-        # === Format Inconsistencies ===
-        if domain == "healthcare" and 'Gender' in df.columns:
-            gender_map = {'Male': 'male', 'Female': 'FEMALE'}
-            df['Gender'] = df['Gender'].replace(gender_map)
-            dq_mask['Gender'] = dq_mask['Gender'] | df['Gender'].isin(gender_map.values())
+        # === Final Validation ===
+        if len(df) != len(dq_mask):
+            raise ValueError(f"Mismatch before saving: df has {len(df)} rows, mask has {len(dq_mask)} rows")
 
-        if 'Lab_Results' in df.columns:
-            num_format_errors = int(self.error_config['format_inconsistency'] * num_rows)
-            logger.info("Injecting %d lab result format errors...", num_format_errors)
-            format_error_indices = np.random.choice(df.index, size=num_format_errors, replace=False)
-            df.loc[format_error_indices, 'Lab_Results'] = "Invalid Result"
-            dq_mask.loc[format_error_indices, 'Lab_Results'] = True
+        # === Prevent Excel from dropping rows with all NaNs ===
+        empty_mask_rows = dq_mask.isna().all(axis=1)
+        if empty_mask_rows.any():
+            logger.warning("Patching %d fully empty rows in dq_mask before saving...", empty_mask_rows.sum())
+            first_col = dq_mask.columns[0]
+            dq_mask.loc[empty_mask_rows, first_col] = "noop"
 
-        # === Sampling for Excel Export ===
-        if len(df_with_duplicates) > MAX_EXCEL_ROWS:
-            logger.warning("Dataset too large. Sampling down to %d rows.", MAX_EXCEL_ROWS)
-            sample_indices = np.random.choice(df_with_duplicates.index, size=MAX_EXCEL_ROWS, replace=False)
-            df_to_save = df_with_duplicates.loc[sample_indices]
-            mask_to_save = dq_mask_with_duplicates.loc[sample_indices]
-        else:
-            df_to_save = df_with_duplicates
-            mask_to_save = dq_mask_with_duplicates
-
-        # === Save Results ===
-        output_dir = Path(output_dir_path)
-        output_dir.mkdir(parents=True, exist_ok=True)
-
-        dirty_file = output_dir / f"{file_prefix}_dirty.xlsx"
+        # === SAVE RESULTS ===
+        dirty_file = output_dir / f"{file_prefix}.xlsx"
         mask_file = output_dir / f"{file_prefix}_dq_mask.xlsx"
 
-        logger.info("Saving dirty dataset to: %s", dirty_file)
-        logger.info("Saving DQ mask to: %s", mask_file)
+        df.to_excel(dirty_file, index=False)
+        dq_mask.to_excel(mask_file, index=False)
+        print(f"Rows in df: {len(df)}")
+        print(f"Rows in mask: {len(dq_mask)}")
 
-        df_to_save.to_excel(dirty_file, index=False)
-        mask_to_save.to_excel(mask_file, index=False)
+        # Reload from saved file
+        df_saved = pd.read_excel(dirty_file)
+        mask_saved = pd.read_excel(mask_file)
+        print(f"Rows in saved df: {len(df_saved)}")
+        print(f"Rows in saved mask: {len(mask_saved)}")
 
-        logger.info("%s DQ injection completed successfully.", domain.capitalize())
+        logger.info("%s DQ injection completed. Shape: %s", domain.capitalize(), df.shape)
+
+
+# === Domain-specific Injectors ===
+
+class HealthcareDQInjector(BaseDQInjector):
+    def inject_errors(self, df: pd.DataFrame, output_dir_path: str, file_prefix: str = "health"):
+        df = self._sample_if_too_large(df)
+        logger.info("Starting Healthcare DQ Injection...")
+        super().inject_errors(df, output_dir_path, file_prefix, domain="healthcare")
+
+
+class RetailDQInjector(BaseDQInjector):
+    def inject_errors(self, df: pd.DataFrame, output_dir_path: str, file_prefix: str = "retail"):
+        df = self._sample_if_too_large(df)
+        logger.info("Starting Retail DQ Injection...")
+        super().inject_errors(df, output_dir_path, file_prefix, domain="retail")
+
+
+class WallmartDQInjector(BaseDQInjector):
+    def inject_errors(self, df: pd.DataFrame, output_dir_path: str, file_prefix: str = "wallmart"):
+        df = self._sample_if_too_large(df)
+        logger.info("Starting Wallmart DQ Injection...")
+        super().inject_errors(df, output_dir_path, file_prefix, domain="wallmart")

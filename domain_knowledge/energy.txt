@@ -1,8 +1,4 @@
-The data contains hourly readings on energy usage and energy returns
-The usage can be 0, but it must never be negative or null
-The return can be 0, but has to be filled
-readings should have intervals of 1 hour for each ean
-EAN values must always be 18-digit numeric strings
-If the source is SDS, return value must be filled
-Abnormal spikes in energy consumption could be wrong sensor readings
-De usage en return kunnen nooit allebei tegelijk negatief zijn
+Usage and return can never be negative at the same time.
+Extreme outliers for usage per meter should be flagged (5x std. dev.), note that this should be compared to the mean from this specific customer only.
+Extreme outliers for return per meter should be flagged (5x std. dev.), note that this should be compared to the mean from this specific customer only.
+The datetime recorded should be valid, and not in the future.

@@ -1,7 +1,7 @@
 import logging
-import os
 
-def get_logger(name: str = "dq_logger", log_file: str = "dq_checks.log") -> logging.Logger:
+
+def get_logger(name: str = "dq_logger", log_file: str = "logs/dq_checks.log") -> logging.Logger:
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
 
@@ -27,4 +27,3 @@ def get_logger(name: str = "dq_logger", log_file: str = "dq_checks.log") -> logg
         logger.propagate = False
 
     return logger
-what 
