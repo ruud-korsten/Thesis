@@ -61,7 +61,7 @@ def main():
     # Tabs for Views
     tabs = st.tabs(["Summary", "Detailed", "Historical"])
     with tabs[0]:
-        render_summary_tab(summary, selected_display_name, dq_card)
+        render_summary_tab(summary, selected_display_name, dq_card, run_path)
     with tabs[1]:
         render_detailed_tab_with_interactions(run_path)
     with tabs[2]:

@@ -58,7 +58,6 @@ Each structured rule must follow this JSON schema:
 - `type`: one of the four supported types
 - `column` or `columns`: the column(s) the rule applies to
 - `condition`: a rule-specific logic object (e.g., {{ "min": 0 }})
-- `group_by`: optional — use if the rule is evaluated within groups
 - `message`: a short explanation of the rule in plain language
 
 ---

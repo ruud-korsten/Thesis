@@ -9,12 +9,15 @@ from utils.load_summary import (
     load_summary_files,
     load_rule_and_note_definitions,
 )
+from data_quality_tool.evaluation.final_validation import FinalValidator
 from utils.session_state_helper import clear_all_filters
 import sys
 import os
 from glob import glob
-from utils.similarity import compute_similarity_scores, compute_prediction_mask_similarity_scores
+from utils.similarity import compute_similarity_scores, compute_prediction_mask_similarity_scores, track_note_function_changes_across_runs, display_note_change_overview, add_semantic_note_clusters, track_rule_changes_across_runs
 import altair as alt
+import os
+
 
 
 print("PYTHONPATH:", sys.path)
@@ -26,7 +29,7 @@ try:
 except Exception as e:
     print("Import failed:", e)
 
-def render_summary_tab(summary, selected_display_name, dq_card):
+def render_summary_tab(summary, selected_display_name, dq_card, selected_run):
     st.title(f"Data Quality Report: {selected_display_name}")
 
     overview = summary["overview"]
@@ -101,6 +104,24 @@ def render_summary_tab(summary, selected_display_name, dq_card):
                        for _, row in notes[notes["Violations"] > 0].iterrows()
                    ] or ["No note violations."]
     })
+
+    # --- Final Validation Section ---
+    with st.expander("Final Validation Feedback", expanded=False):
+        try:
+            # Point to the specific run folder and load feedback file
+            validation_path = os.path.join(selected_run, "final_validation.txt")
+            print("VALIDATION PATH ---------------> ",validation_path)
+            if os.path.exists(validation_path):
+                with open(validation_path, "r", encoding="utf-8") as f:
+                    validation_feedback = f.read()
+
+                st.markdown("**LLM Feedback on Rules & Notes:**")
+                st.info(validation_feedback)
+            else:
+                st.warning("No final validation report found for this run.")
+
+        except Exception as e:
+            st.error(f"Final validation failed to load: {e}")
 
 
 def render_detailed_tab_with_interactions(run_path):
@@ -348,12 +369,13 @@ def render_detailed_tab_with_interactions(run_path):
             st.markdown("### Violation Explanation")
             st.info(explanation)
 
-import os
-import pandas as pd
-import streamlit as st
-from glob import glob
-import altair as alt
-from utils.similarity import compute_prediction_mask_similarity_scores
+        if st.button("Root Cause explanation", disabled=(selected_index is None)):
+            dataset_name = os.path.basename(os.path.dirname(run_path))
+            run_timestamp = os.path.basename(run_path)
+            explainer = ExplainViolation(dataset_name=dataset_name, run_timestamp=run_timestamp)
+            explanation = explainer.explain_violation_with_history(selected_index)
+            st.markdown("### Root cause explanation")
+            st.info(explanation)
 
 def render_historical_tab(domain_path):
     st.title("Historical Data Quality Trends")
@@ -531,3 +553,56 @@ def render_historical_tab(domain_path):
                 """,
                 unsafe_allow_html=True
             )
+
+    # --- Note Drift Analysis ---
+    st.subheader("🧠 Note Function Drift Across Runs")
+    try:
+
+        result = track_note_function_changes_across_runs(run_paths)
+        note_stats = result["note_stats"]
+        note_stats = add_semantic_note_clusters(note_stats)
+
+        st.markdown("### Note Function Change Summary")
+        st.write({
+            "Total Unique Notes (by logic)": len(note_stats),
+            **result["change_summary"]
+        })
+
+        color_map = {"stable": "✅", "intermittent": "🟡", "unique": "🆕"}
+        note_stats["Status Icon"] = note_stats["status"].map(color_map)
+
+        st.dataframe(note_stats[[
+            "Status Icon", "status", "runs_seen", "example_description", "cluster_id"
+        ]])
+
+        with st.expander("📋 Note Appearance Matrix (hash × run)"):
+            st.dataframe(result["note_history"].fillna(""))
+
+    except Exception as e:
+        st.warning(f"Unable to compute note changes: {e}")
+
+    # --- Rule Drift Analysis ---
+    st.subheader("📜 Rule Definition Drift Across Runs")
+    try:
+        rule_result = track_rule_changes_across_runs(run_paths)
+        if rule_result is not None:
+            rule_stats = rule_result["rule_stats"]
+            rule_history = rule_result["rule_history"]
+
+            st.markdown("### Rule Logic Change Summary")
+            st.write({
+                "Total Unique Rules (by logic)": len(rule_stats),
+                "Stable (all runs)": int((rule_stats["runs_seen"] == len(run_paths)).sum()),
+                "Changed/Intermittent": int((rule_stats["runs_seen"] < len(run_paths)).sum())
+            })
+
+            st.dataframe(rule_stats[[
+                "rule_id", "description", "column", "type", "runs_seen"
+            ]])
+
+            with st.expander("📋 Rule Appearance Matrix (hash × run)"):
+                st.dataframe(rule_history)
+        else:
+            st.info("No rules.json files found in selected runs.")
+    except Exception as e:
+        st.warning(f"Unable to compute rule changes: {e}")

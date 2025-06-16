@@ -1,81 +1,33 @@
 [
   {
     "id": "R001",
-    "name": "InvoiceNo must not be null",
-    "type": "not_null",
-    "column": "InvoiceNo",
-    "condition": {},
-    "message": "InvoiceNo must be a non-null, non-empty string or integer."
+    "name": "Valid Age Range",
+    "type": "range",
+    "column": "Age",
+    "condition": {
+      "min": 0,
+      "max": 120
+    },
+    "message": "Age must be between 0 and 120."
   },
   {
     "id": "R002",
-    "name": "InvoiceNo pattern restriction",
+    "name": "Hospital_ID Format",
     "type": "pattern",
-    "column": "InvoiceNo",
-    "condition": {},
-    "message": "InvoiceNo should not contain any special characters or spaces."
+    "column": "Hospital_ID",
+    "condition": {
+      "regex": "^H\\d{3}$"
+    },
+    "message": "Hospital_ID must follow the format HXXX, where XXX are 3 digits."
   },
   {
     "id": "R003",
-    "name": "StockCode must not be null",
-    "type": "not_null",
-    "column": "StockCode",
-    "condition": {},
-    "message": "StockCode must be a non-null, non-empty string."
-  },
-  {
-    "id": "R004",
-    "name": "StockCode pattern restriction",
+    "name": "Valid Gender Values",
     "type": "pattern",
-    "column": "StockCode",
-    "condition": {},
-    "message": "StockCode should not contain any special characters, except for known patterns like alphanumeric codes."
-  },
-  {
-    "id": "R005",
-    "name": "Quantity must be positive",
-    "type": "range",
-    "column": "Quantity",
+    "column": "Gender",
     "condition": {
-      "min": 1
+      "regex": "^(Male|Female)$"
     },
-    "message": "Quantity should be greater than or equal to 1."
-  },
-  {
-    "id": "R006",
-    "name": "InvoiceDate valid range",
-    "type": "range",
-    "column": "InvoiceDate",
-    "condition": {
-      "min": "2000-01-01",
-      "max": "current_date"
-    },
-    "message": "InvoiceDate should fall within the range of expected business operation dates."
-  },
-  {
-    "id": "R007",
-    "name": "UnitPrice must be positive",
-    "type": "range",
-    "column": "UnitPrice",
-    "condition": {
-      "min": 0.01
-    },
-    "message": "UnitPrice should be greater than zero."
-  },
-  {
-    "id": "R008",
-    "name": "CustomerID must not be null",
-    "type": "not_null",
-    "column": "CustomerID",
-    "condition": {},
-    "message": "CustomerID must be a non-null, non-empty string or integer."
-  },
-  {
-    "id": "R009",
-    "name": "Country must not be null",
-    "type": "not_null",
-    "column": "Country",
-    "condition": {},
-    "message": "Country must be a non-null, non-empty string."
+    "message": "Gender must be either 'Male' or 'Female'."
   }
 ]

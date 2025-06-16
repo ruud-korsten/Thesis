@@ -20,8 +20,10 @@ def save_run_snapshot(
     domain_file_dir="domain_knowledge",
     output_dir="artifacts/runs",
     accuracy_path="artifacts/accuracy.json",
-    run_accuracy=None
+    run_accuracy=None,
+    final_validation: str = None  # <-- added
 ):
+
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     run_dir = os.path.join(output_dir, dataset_name, timestamp)
     os.makedirs(run_dir, exist_ok=True)
@@ -90,5 +92,12 @@ def save_run_snapshot(
     logger.debug("Saved config snapshot to %s", config_path)
 
     logger.info("Run snapshot saved successfully.")
+
+    # 7. Save final validation feedback if available
+    if final_validation:
+        validation_path = os.path.join(run_dir, "final_validation.txt")
+        with open(validation_path, "w", encoding="utf-8") as f:
+            f.write(final_validation)
+        logger.debug("Saved final validation feedback to %s", validation_path)
 
     return run_dir

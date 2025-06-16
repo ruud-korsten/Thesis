@@ -47,6 +47,7 @@ class FinalValidator:
             "You are a senior data quality analyst. Your job is to verify whether the given data quality rules and notes "
             "make sense given the structure and statistics of the dataset. You are provided with the dataset shape, "
             "summary statistics, and summaries of rule and note violations. Critically asses if the number of violations compared to the number size of the dataset makes sense (flagging all rows as violations doesnt make sense)."
+            "Never use emojis in your answer."
         )
 
         user_message = f"""

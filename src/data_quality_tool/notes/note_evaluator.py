@@ -38,6 +38,8 @@ class NoteEvaluator:
                     raise ValueError("Returned Series is not boolean.")
                 if len(result) != len(self.df):
                     raise ValueError("Returned Series length does not match DataFrame.")
+                if not result.index.equals(self.df.index):
+                    raise ValueError("Returned Series index does not match DataFrame index.")
 
                 num_flags = result.sum()
 
@@ -50,6 +52,7 @@ class NoteEvaluator:
                 }
 
                 logger.info("%s flagged %d rows", func.__name__, num_flags)
+
 
             except Exception as e:
                 error_msg = str(e)

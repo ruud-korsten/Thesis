@@ -20,7 +20,6 @@ try:
     from datasets import load_dataset as hf_load_dataset
 except ImportError:
     hf_load_dataset = None
-    hf_load_dataset = None
     logger.warning("Hugging Face 'datasets' library is not installed.")
 
 DATA_ROOT = "data"
@@ -64,7 +63,7 @@ def load_dataset(name: str, dirty: bool = False, output_format: str = "xlsx") ->
         # Load clean data and capture expected schema before any injection
         df, _ = DATASET_LOADERS[name]()
         expected_dtypes = df.dtypes.copy()
-
+        logger.info("Loaded dataset types: %s", expected_dtypes)
         logger.debug("Loaded dataset shape: %s", df.shape)
         logger.debug("Loaded dataset columns: %s", list(df.columns))
         logger.debug("Loaded dataset dtypes: %s", df.dtypes)

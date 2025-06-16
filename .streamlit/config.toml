@@ -1,0 +1,7 @@
+[theme]
+base="light"
+primaryColor="#003366"         # A professional blue
+backgroundColor="#ffffff"      # Pure white background
+secondaryBackgroundColor="#f5f5f5"  # Light grey for containers
+textColor="#000000"            # Black text for academic clarity
+font="serif"                   # Or "sans serif" for cleaner look

@@ -222,28 +222,20 @@ def main():
     logger.info("=" * 30 + " [6. SNAPSHOT EXPORT] " + "=" * 30)
     save_rule_note_summary(executor.reports, note_results)
 
+    final_validation = None
+    if FINAL_VALIDATION:
+        validator = FinalValidator(run_dir="artifacts", dataset=df)
+        final_validation = validator.validate()
+        logger.info("Validation Feedback:\n%s", final_validation)
+
     save_run_snapshot(
         dataset_name=DATASET_NAME,
         pred_mask=mask_df,
         true_mask_path=GROUND_TRUTH_MASK,
         dataset=df,
         run_accuracy=accuracy if accuracy else None,
+        final_validation=final_validation
     )
-
-    if FINAL_VALIDATION:
-        logger.info("=" * 30 + " [7. FINAL VALIDATION] " + "=" * 30)
-
-        # Point to the base artifacts folder if that's where files are saved
-        latest_run_path = "artifacts"
-
-        if os.path.isdir(latest_run_path):
-            validator = FinalValidator(run_dir=latest_run_path, dataset=df)
-            validation_feedback = validator.validate()
-
-            logger.info("Validation Feedback:\n%s", validation_feedback)
-            print("\n" + "=" * 40 + "\nFinal Validation Report:\n" + validation_feedback + "\n" + "=" * 40)
-        else:
-            logger.warning("Could not locate the latest run directory for validation.")
 
 
 if __name__ == "__main__":

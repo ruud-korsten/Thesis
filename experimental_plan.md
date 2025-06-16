@@ -11,10 +11,13 @@ These variables affect latency, cost, and overall system performance.
 ### 1. Model Variants
 Evaluate LLM behavior across model types:
 
-- `GPT-4o`
 - `GPT-4o-mini`
-- `GPT-3.5`
 - `GPT-4.1`
+- `deepseek-chat`
+- `deepseek-reasoner`
+- `Mistral`
+
+
 
 ### 2. Prompting & Validation Features
 Assess prompt engineering techniques and validation tools:
@@ -24,18 +27,22 @@ Assess prompt engineering techniques and validation tools:
 - **Note Validation**: Functionality check of LLM-generated notes
 - **Domain Extraction**: Auto-extract column-level metadata for context-aware prompting
 
+
 ### 3. Dataset Size
 Impact of dataset scale on performance:
 
-- `Small` — representative sample
-- `Medium` — realistic production size
-- `Large` — stress test with scale
+- `Small` — 1,000 rows
+- `Medium` — 50,000 rows
+- `Large` — 500,000 rows
+
+These tiers reflect increasingly realistic production environments. Large-scale tests (≥100k rows) allow for stress-testing the LLM pipeline under volume. While 1 million rows could be considered for extreme-scale benchmarking, 100k strikes a balance between runtime feasibility and realism for most mid-sized data operations.
 
 #### Goals:
 - Assess impact on:
   - Violation detection accuracy
-  - System latency
-  - Token and cost metrics
+  - System latency and runtime
+  - Token usage and cost metrics
+
 
 ---
 
@@ -97,52 +104,46 @@ Recommended approach for running experiments:
 2. **Fix DQ Scenario**, vary Prompting/Model settings
 3. **Repeat for all model variants and dataset sizes**
 
-### Automation Tips:
-- Use a script to log metrics to a `.csv` or `.jsonl` per run
-- Log each config as a unique `run_id` with all relevant metadata
-- Capture versioning for prompt templates and datasets
 
----
+### 4. Control Baseline
+To quantify the added value of Generative AI, a non-LLM baseline is included for comparison.
 
-## 📂 Suggested Folder Structure
+#### Baseline Methods:
+- **Static Rules Only**: Apply predefined standard checks (e.g., missing values, type mismatches, duplicates) without LLM involvement.
+- **Open-source DQ Tools**: Use tools like `great_expectations` to define and validate expectations on the same datasets.
 
-```
-/experiments/
-  ├── configs/
-  │   ├── gpt4o_small_health.json
-  │   └── gpt35_large_sensor.json
-  ├── results/
-  │   ├── run_001.json
-  │   └── run_002.json
-  ├── logs/
-  │   └── runtime_log.csv
-  └── prompts/
-      ├── base_prompt_v1.txt
-      └── rci_prompt_v2.txt
-```
+These baselines act as reference points for evaluating the **relative performance of LLM-enhanced pipelines**, helping to isolate the impact of generative components on anomaly detection precision, recall, and cost.
 
----
-
-## 📌 Next Steps
-
-- [ ] Convert this plan into a Linear board with tasks per cycle
-- [ ] Finalize logging schema for metrics collection
-- [ ] Automate run tracking (shell + Python logger)
-- [ ] Begin first benchmark cycle with `GPT-4o` on `Retail` dataset
+#### Evaluation Goals:
+- Measure how much LLMs improve rule coverage and accuracy.
+- Assess whether the extra compute cost is justified by measurable gains.
+- Provide interpretability comparisons between traditional and AI-generated outputs.
 
 
 ---
 
 ## 🔁 Repeat Runs for Drift & Stability Analysis
 
-To measure **drift** and ensure consistency of LLM outputs, each experiment configuration should be executed **5 times**.
+To measure **drift** and ensure consistency of LLM outputs, each experiment configuration is executed **5 times**.
 
-### 🔹 Purpose
-- Capture stochastic variation in LLM outputs
-- Validate system **stability and reproducibility**
-- Identify flaky behavior in rule/note generation or anomaly detection
+### 🔹 Sliding Window Strategy
+Instead of sampling randomly with fixed seeds, we apply a **sliding window technique** on the dataset to increase realism and variance sensitivity:
 
-### 🧮 Metrics to Aggregate
+- For each dataset tier (e.g., small = 1000 rows), run N uses the first N × 1000 rows:
+  - **Run 1:** rows 1–1000
+  - **Run 2:** rows 1–2000
+  - **Run 3:** rows 1–3000
+  - ...
+  - **Run 5:** rows 1–5000
+
+This method:
+- Simulates progressive system load
+- Exposes temporal or pattern-based biases
+- Helps observe scaling behavior even within one tier
+
+Note: when the dataset has fewer rows than the max window size, padding or looping can be applied, or runs may be capped accordingly.
+
+### Metrics to Aggregate
 For each configuration (model + prompt + dataset + error type + injection level):
 
 1. **Run 5 times**
@@ -159,37 +160,30 @@ For each configuration (model + prompt + dataset + error type + injection level)
 | `std_f1`       | Standard deviation of F1 (drift indicator)       |
 | `mean_latency` | Average runtime                                  |
 | `mean_tokens`  | Average token usage                              |
-| `drift_score`  | (Optional) Avg. difference between output masks  |
+| `drift_score`  | Avg. difference between output masks             |
 
----
+To measure **drift** and ensure consistency of LLM outputs, each experiment configuration should be executed **5 times**.
 
-### 🗃️ Example Result JSON Schema
+### Purpose
+- Capture stochastic variation in LLM outputs
+- Validate system **stability and reproducibility**
+- Identify flaky behavior in rule/note generation or anomaly detection
 
-```json
-{
-  "config_id": "gpt4o_rci_health_small_0.01",
-  "model": "GPT-4o",
-  "prompting": "RCI",
-  "dataset": "Health",
-  "size": "Small",
-  "injection_type": "Missing",
-  "injection_level": 0.01,
-  "runs": [
-    { "run_id": 1, "f1": 0.82, "precision": 0.85, "recall": 0.79, "tokens": 5800, "latency_sec": 12.4 },
-    { "run_id": 2, "f1": 0.80, "precision": 0.84, "recall": 0.76, "tokens": 5700, "latency_sec": 12.1 },
-    ...
-  ],
-  "aggregates": {
-    "mean_f1": 0.81,
-    "std_f1": 0.015,
-    "mean_latency": 12.6,
-    "mean_tokens": 5700
-  }
-}
-```
+### Metrics to Aggregate
+For each configuration (model + prompt + dataset + error type + injection level):
 
----
+1. **Run 5 times**
+2. Log per-run:
+   - `F1`, `Precision`, `Recall`
+   - `Token usage`
+   - `Runtime`
 
-### 🧰 Automation Tip
-- Use Python or shell scripts to repeat and log runs automatically
-- Store logs in a structured format (`.jsonl` or `.csv`) for easy aggregation
+3. Compute:
+
+| Metric         | Description                                      |
+|----------------|--------------------------------------------------|
+| `mean_f1`      | Average F1 score across 5 runs                   |
+| `std_f1`       | Standard deviation of F1 (drift indicator)       |
+| `mean_latency` | Average runtime                                  |
+| `mean_tokens`  | Average token usage                              |
+| `drift_score`  | Avg. difference between output masks             |
