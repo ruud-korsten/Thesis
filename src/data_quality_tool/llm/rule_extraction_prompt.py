@@ -59,6 +59,7 @@ Each structured rule must follow this JSON schema:
 - `column` or `columns`: the column(s) the rule applies to
 - `condition`: a rule-specific logic object (e.g., {{ "min": 0 }})
 - `message`: a short explanation of the rule in plain language
+- 'provenance: an explanation on what the rule is based on'
 
 ---
 

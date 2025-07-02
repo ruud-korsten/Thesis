@@ -1,0 +1,7 @@
+Weekly_Sales may never be negative.
+Date may not be in the future.
+Weekly_Sales must always be filled.
+The combination of Store, Dept, and Date must be unique.
+outliers in weekly_sales must be flagged (like 3x std dev).
+store must be an integer
+outliers in dept must be flagged (like 3x std dev).

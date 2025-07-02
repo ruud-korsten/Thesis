@@ -1,0 +1,2 @@
+dataset,size,model,features,error_level,mean_accuracy,mean_f1,std_f1,mean_latency,mean_tokens,runs_count
+sensor,Medium,grok-3,NoFeatures,0.01,0.8706844444444445,0.30735451694051097,0.13149945278747477,30.153934526443482,3474.2,5

@@ -44,7 +44,9 @@ def save_run_snapshot(
     # 2. Copy ground truth and dataset
     if run_accuracy:
         gt_dest = os.path.join(run_dir, "ground_truth_mask.xlsx")
-        shutil.copy(true_mask_path, gt_dest)
+        if true_mask_path is not None:
+            shutil.copy(true_mask_path, gt_dest)
+
         logger.debug("Copied ground truth mask to %s", gt_dest)
 
     dataset_dest = os.path.join(run_dir, "dataset.csv")
@@ -61,7 +63,7 @@ def save_run_snapshot(
             logger.warning("Artifact not found: %s", file)
 
     # 4. Copy domain file
-    domain_file = os.path.join(domain_file_dir, f"{dataset_name}.txt")
+    domain_file = os.path.join(domain_file_dir)
     domain_dest = os.path.join(run_dir, "domain.txt")
     if os.path.exists(domain_file):
         shutil.copy(domain_file, domain_dest)

@@ -1,4 +1,0 @@
-Age must be in a range that is acceptable for an age, like 0-120.
-Hospital_ID Must follow the following structure: HXXX (where XXX are 3 digits).
-Patient_ID is numeric, so should be checked for outliers.
-Gender must be Male or Female.

@@ -51,7 +51,7 @@ class RuleParser:
             use_rci: bool = True,
             cache_path: str = "artifacts/dq_rules.json",
             force_refresh: bool = False
-    ) -> tuple[list[dict], list[str]]:
+    ) -> tuple[list[dict], list[str], dict]:  # Include usage in return type
         if not force_refresh and os.path.exists(cache_path):
             logger.info("Using cached rules from %s", cache_path)
             with open(cache_path) as f:
@@ -61,7 +61,7 @@ class RuleParser:
                     notes = json.load(f)
             else:
                 notes = []
-            return rules, notes
+            return rules, notes, {}
 
         if df.empty:
             raise ValueError("Provided DataFrame is empty.")
@@ -69,14 +69,19 @@ class RuleParser:
         with open(rules_path, encoding="utf-8") as f:
             domain_text = f.read().strip()
 
-        messages  = build_rule_extraction_messages(domain_text, df.columns.tolist())
+        messages = build_rule_extraction_messages(domain_text, df.columns.tolist())
         logger.info("Running rule extraction...")
 
-        if use_rci:
-            result = self.rci.run_rci_pipeline(messages, domain_text, df.columns.tolist())
-            raw_response = result["improved_output"]
-        else:
-            raw_response = self.llm.call(messages=messages)
+        try:
+            if use_rci:
+                result = self.rci.run_rci_pipeline(messages, domain_text, df.columns.tolist())
+                raw_response = result["improved_output"]
+                usage = result["token_usage"]
+            else:
+                raw_response, usage = self.llm.call(messages=messages)
+        except Exception as e:
+            logger.error("LLM call failed during rule parsing: %s", str(e))
+            return [], [f"LLM call failed: {str(e)}"], {}
 
         rules, notes = self.split_llm_response(raw_response)
 
@@ -86,4 +91,7 @@ class RuleParser:
             json.dump(notes, f, indent=2)
 
         logger.info("Extracted %d rules and %d notes", len(rules), len(notes))
-        return rules, notes
+        logger.debug("Token usage: %s", usage)
+
+        return rules, notes, usage
+

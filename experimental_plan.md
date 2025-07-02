@@ -14,26 +14,24 @@ Evaluate LLM behavior across model types:
 - `GPT-4o-mini`
 - `GPT-4.1`
 - `deepseek-chat`
-- `deepseek-reasoner`
-- `Mistral`
-
+- `deepssek-reasoner`
+- `Mistral-medium`
+- `grok-3`
+- `grok-3-mini`
 
 
 ### 2. Prompting & Validation Features
 Assess prompt engineering techniques and validation tools:
 
 - **RCI Prompting**: Rule/note generation enriched with reasoning and self-checks
-- **Final Validation**: Post-run reasoning pass to validate rule/note coherence
-- **Note Validation**: Functionality check of LLM-generated notes
 - **Domain Extraction**: Auto-extract column-level metadata for context-aware prompting
 
 
 ### 3. Dataset Size
 Impact of dataset scale on performance:
 
-- `Small` — 1,000 rows
-- `Medium` — 50,000 rows
-- `Large` — 500,000 rows
+- `Medium` — 10,000 rows
+- `Large` — 100,000 rows
 
 These tiers reflect increasingly realistic production environments. Large-scale tests (≥100k rows) allow for stress-testing the LLM pipeline under volume. While 1 million rows could be considered for extreme-scale benchmarking, 100k strikes a balance between runtime feasibility and realism for most mid-sized data operations.
 
@@ -67,7 +65,6 @@ Simulated error types and levels to test detection sensitivity:
 - `Outliers`
 
 #### Injection Levels:
-- `0.0` — Clean baseline
 - `0.01` — Low corruption
 - `0.1` — High corruption
 
@@ -80,7 +77,6 @@ Each experiment run collects metrics across four dimensions:
 
 ### 1. Speed
 - Total pipeline runtime
-- Per-stage latency (loading, LLM calls, validation, etc.)
 
 ### 2. Token & Cost
 - Tokens used per model stage
@@ -160,7 +156,6 @@ For each configuration (model + prompt + dataset + error type + injection level)
 | `std_f1`       | Standard deviation of F1 (drift indicator)       |
 | `mean_latency` | Average runtime                                  |
 | `mean_tokens`  | Average token usage                              |
-| `drift_score`  | Avg. difference between output masks             |
 
 To measure **drift** and ensure consistency of LLM outputs, each experiment configuration should be executed **5 times**.
 
@@ -168,22 +163,3 @@ To measure **drift** and ensure consistency of LLM outputs, each experiment conf
 - Capture stochastic variation in LLM outputs
 - Validate system **stability and reproducibility**
 - Identify flaky behavior in rule/note generation or anomaly detection
-
-### Metrics to Aggregate
-For each configuration (model + prompt + dataset + error type + injection level):
-
-1. **Run 5 times**
-2. Log per-run:
-   - `F1`, `Precision`, `Recall`
-   - `Token usage`
-   - `Runtime`
-
-3. Compute:
-
-| Metric         | Description                                      |
-|----------------|--------------------------------------------------|
-| `mean_f1`      | Average F1 score across 5 runs                   |
-| `std_f1`       | Standard deviation of F1 (drift indicator)       |
-| `mean_latency` | Average runtime                                  |
-| `mean_tokens`  | Average token usage                              |
-| `drift_score`  | Avg. difference between output masks             |

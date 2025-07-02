@@ -1,0 +1,20 @@
+1. **General Dataset Description**  
+   The primary dataset represents patient medical records, capturing comprehensive healthcare information for individuals across various hospitals. Each record includes patient demographics, medical diagnoses, symptoms, medications, doctor notes, and lab results. This data is crucial for healthcare providers to track patient history, manage treatments, and ensure continuity of care. The primary dataset is related to the context datasets through shared identifiers like `Patient_ID` and `Hospital_ID`. The context datasets provide additional dimensions: the `Encounter_Visits` dataset details hospital visit information, the `Patients` dataset offers demographic and hospital information, and the `Structured_Lab_Results` dataset includes detailed lab test results. Together, these datasets create a holistic view of patient care and hospital operations.
+
+2. **Domain Knowledge Expectations**  
+   - **Unique Identifiers**: `Patient_ID` and `Hospital_ID` should be unique within their respective contexts, ensuring that each patient and hospital is distinct.
+   - **Non-negative Values**: Fields like `Age` and numeric lab results should not contain negative values, as these would be nonsensical.
+   - **Consistent Gender Representation**: The `Gender` field should consistently use a defined set of values, typically "Male" or "Female".
+   - **Logical Age Distribution**: Ages should be within a plausible range for adults and align with typical human lifespans (e.g., 0-120 years).
+   - **Diagnosis and Symptoms Consistency**: Diagnoses and symptoms should logically correlate; for example, symptoms listed should be relevant to the diagnoses given.
+   - **Medication Appropriateness**: Medications should correspond to the diagnoses and symptoms, following standard medical practices.
+   - **Completeness**: Critical fields like `Diagnosis`, `Symptoms`, `Medications`, and `Lab_Results` should not be null or empty, as they are essential for patient care.
+   - **Temporal Logic**: Dates and sequences (e.g., admission and discharge dates in `Encounter_Visits`) should follow logical chronological order.
+
+3. **Business Logic & Assumptions**  
+   - **Patient-Hospital Relationship**: Each patient is associated with a hospital, and this relationship is essential for understanding where treatments are administered.
+   - **Symptom and Diagnosis Alignment**: There should be a logical relationship between symptoms and diagnoses, where symptoms are indicative of the diagnosed conditions.
+   - **Medication Consistency**: Medications prescribed should be appropriate for the diagnoses and symptoms, following standard medical guidelines.
+   - **Data Integrity Across Datasets**: `Patient_ID` should consistently link the primary dataset to `Encounter_Visits` and `Structured_Lab_Results`, ensuring integrated patient records.
+   - **Hospital Operations**: The dataset may be used to evaluate hospital performance, patient outcomes, and treatment efficacy, thus requiring high data quality and accuracy.
+   - **Lab Results Contextualization**: Lab results should be interpreted within the context of specified reference ranges, and flags (e.g., "Normal", "Abnormal") should be used to highlight significant deviations.

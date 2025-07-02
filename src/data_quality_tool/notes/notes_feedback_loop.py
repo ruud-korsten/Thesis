@@ -19,7 +19,7 @@ class NoteFeedbackLoop:
         self.df = df
         self.columns = list(df.columns) if df is not None else []
 
-    def fix_failed_note(self, note: str, code: str, error: str) -> str:
+    def fix_failed_note(self, note: str, code: str, error: str) -> tuple[str, dict]:
         """
         Uses the LLM to repair a broken function by providing the note, broken code, and error.
         Returns clean Python code with no markdown or comments.
@@ -64,9 +64,8 @@ Please return a fixed Python function that:
 
         try:
             logger.debug("Sending LLM request for note: %s", note)
-            logger.debug("LLM prompt:\n---\n%s\n---", user_message["content"])
 
-            raw_response = self.llm.call(messages=[system_message, user_message])
+            raw_response, usage = self.llm.call(messages=[system_message, user_message])
             logger.debug("LLM raw response:\n%s", raw_response)
 
             cleaned = raw_response.strip()
@@ -75,42 +74,34 @@ Please return a fixed Python function that:
                 cleaned = "\n".join(line for line in lines if not line.strip().startswith("```")).strip()
 
             logger.debug("LLM cleaned function:\n%s", cleaned)
-            return cleaned
+            return cleaned, usage
 
         except Exception as e:
             logger.exception("Failed to call LLM during function repair for note: %s — %s", note, str(e))
             raise
 
-    def retry_failed_notes(self, note_results: Dict[str, Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
+    def retry_failed_notes(self, note_results: Dict[str, Dict[str, Any]]
+                           ) -> tuple[Dict[str, Dict[str, Any]], Dict[str, Dict[str, Any]]]:
         """
-        Retry all failed notes using the LLM.
-        Returns a dictionary with repaired results for successfully fixed notes.
+        Retry all failed notes.
+
+        Returns
+        -------
+        repaired   : notes that were fixed (or still failed) with metadata
+        usage_dict : {note: usage_stats} for every LLM retry call
         """
-        repaired = {}
+        repaired: Dict[str, Dict[str, Any]] = {}
+        usage_dict: Dict[str, Dict[str, Any]] = {}
 
         for note, result in note_results.get("failed", {}).items():
             logger.info("Retrying failed note using LLM: %s", note)
-            logger.debug("Original error: %s", result["error"])
-            logger.debug("Original function:\n%s", result["code"])
 
             try:
-                fixed_code = self.fix_failed_note(
-                    note=note,
-                    code=result["code"],
-                    error=result["error"]
+                fixed_code, usage = self.fix_failed_note(
+                    note=note, code=result["code"], error=result["error"]
                 )
 
-                local_env = {}
-                exec(fixed_code, {"pd": pd}, local_env)
-                func = next((v for v in local_env.values() if callable(v)), None)
-
-                if func is None:
-                    raise ValueError("Fixed code did not define a valid function.")
-
-                result_series = func(self.df)
-
-                if not isinstance(result_series, pd.Series) or result_series.dtype != bool:
-                    raise ValueError("Fixed function did not return a valid boolean Series.")
+                usage_dict[note] = usage  #collect usage
 
                 repaired[note] = {
                     "id": result["id"],
@@ -118,7 +109,7 @@ Please return a fixed Python function that:
                     "violations": int(result_series.sum()),
                     "violations_mask": result_series,
                     "code": fixed_code,
-                    "recovered_from": result["error"]
+                    "recovered_from": result["error"],
                 }
 
                 logger.info("Fixed note succeeded: %s (%d violations)", func.__name__, int(result_series.sum()))
@@ -129,7 +120,7 @@ Please return a fixed Python function that:
                     "id": result["id"],
                     "code": result["code"],
                     "error": str(e),
-                    "recovered_from": result["error"]
+                    "recovered_from": result["error"],
                 }
 
-        return repaired
+        return repaired, usage_dict

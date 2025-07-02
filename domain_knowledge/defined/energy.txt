@@ -1,0 +1,4 @@
+Usage and return can never be negative at the same time.
+Extreme outliers for usage per meter should be flagged (10x std. dev.), note that this should be compared to the mean from this specific customer only.
+Extreme outliers for return per meter should be flagged (10x std. dev.), note that this should be compared to the mean from this specific customer only.
+The datetime recorded must not in the future.

@@ -1,0 +1,2 @@
+dataset,size,model,features,error_level,mean_accuracy,mean_f1,std_f1,mean_latency,mean_tokens,runs_count
+retail,Large,baseline,NoGenAI,0.01,0.9682184375,0.6201738114417168,0.035944241451242934,6.082942152023316,0,5

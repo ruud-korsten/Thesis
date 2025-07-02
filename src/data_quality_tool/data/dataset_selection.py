@@ -8,7 +8,7 @@ from data_quality_tool.data.db import fetch_table
 from data_quality_tool.data.dq_injection import (
     HealthcareDQInjector,
     RetailDQInjector,
-    WallmartDQInjector,
+    WallmartDQInjector, SensorDQInjector,
 )
 
 logger = get_logger()
@@ -39,12 +39,13 @@ DQ_INJECTORS = {
     "health": HealthcareDQInjector,
     "retail": RetailDQInjector,
     "wallmart": WallmartDQInjector,
+    "sensor": SensorDQInjector,
 }
 
 
 def load_dataset(name: str, dirty: bool = False, output_format: str = "xlsx") -> tuple[pd.DataFrame, pd.Series, str]:
     logger.info("Loading dataset: %s (dirty=%s)", name, dirty)
-    domain_path = os.path.join(DOMAIN_ROOT, f"{name}.txt")
+    domain_path = os.path.join(DOMAIN_ROOT,"defined", f"{name}.txt")
     output_dir = f"./data/{name}/dirty"
     dirty_file = os.path.join(output_dir, f"{name}.{output_format}")
     mask_file = os.path.join(output_dir, f"{name}_dq_mask.{output_format}")

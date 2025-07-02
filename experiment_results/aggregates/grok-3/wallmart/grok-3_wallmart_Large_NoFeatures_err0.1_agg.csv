@@ -1,0 +1,2 @@
+dataset,size,model,features,error_level,mean_accuracy,mean_f1,std_f1,mean_latency,mean_tokens,runs_count
+wallmart,Large,grok-3,NoFeatures,0.1,0.8026917333333333,0.6897231351351494,0.03205876668310542,20.354790925979614,2411,5

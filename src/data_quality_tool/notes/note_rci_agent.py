@@ -28,6 +28,7 @@ class NoteRCIAgent:
             "- Are the assumptions about column names valid?\n"
             "- Does it return a valid boolean Series of violations?\n\n"
             "Respond with a clear, constructive critique and suggest specific improvements if needed."
+            "Do **not** use EMOJIS and Unicode characters (-> in stead of arrows)!"
         )
 
     def build_improvement_prompt(self, note: str, original_code: str, critique: str, df_columns: list[str]) -> str:
@@ -44,22 +45,29 @@ class NoteRCIAgent:
             "---\n\n"
             "Return only the improved Python function. Do not include explanations or markdown formatting."
             "Don't import pandas. Just return the function."
+            "Do **not** use EMOJIS and Unicode characters (-> in stead of arrows)!"
         )
 
     def run_note_rci(self, note: str, raw_code: str, df_columns: list[str]) -> dict:
         logger.info("Running RCI for note: %s", note)
         logger.debug("Initial raw code:\n%s", raw_code)
 
+        # === Critique Step ===
         critique_prompt = self.build_critique_prompt(note, raw_code, df_columns)
-        critique = self.llm.call(critique_prompt)
+        critique, critique_usage = self.llm.call(prompt=critique_prompt)
         logger.debug("Critique:\n%s", critique)
 
+        # === Improvement Step ===
         improvement_prompt = self.build_improvement_prompt(note, raw_code, critique, df_columns)
-        improved_code = self.llm.call(improvement_prompt)
+        improved_code, improvement_usage = self.llm.call(prompt=improvement_prompt)
         logger.debug("Improved Code:\n%s", improved_code)
 
+        # === Return Results and Flat Usage Stats ===
         return {
             "original": raw_code,
             "critique": critique,
-            "improved": improved_code
+            "improved": improved_code,
+            "critique_usage": critique_usage,
+            "improvement_usage": improvement_usage
         }
+

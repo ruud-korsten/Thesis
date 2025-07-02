@@ -185,25 +185,32 @@ def track_note_function_changes_across_runs(run_paths):
 # ========== Optional Streamlit Display ==========
 
 def display_note_change_overview(run_paths):
+    from similarity import track_note_function_changes_across_runs, add_semantic_note_clusters
     result = track_note_function_changes_across_runs(run_paths)
     note_history = result["note_history"]
     change_summary = result["change_summary"]
     note_stats = result["note_stats"]
 
-    st.markdown("### 🧠 Note Function Change Summary")
+    # Group notes by semantic cluster
+    note_stats = add_semantic_note_clusters(note_stats)
+
+    st.markdown("### Note Function Change Summary")
     st.write({
         "Total Unique Notes (by logic)": len(note_stats),
         **change_summary
     })
 
-    color_map = {"stable": "✅", "intermittent": "🟡", "unique": "🆕"}
-    note_stats["Status Icon"] = note_stats["status"].map(color_map)
-    st.dataframe(note_stats[["Status Icon", "status", "runs_seen", "example_description"]])
+    # Grouped display by cluster_id
+    st.markdown("#### Notes Grouped by Semantic Cluster")
+    for cluster, group in note_stats.groupby("cluster_id"):
+        st.markdown(f"**Cluster {cluster}**")
+        st.dataframe(group[["status", "runs_seen", "example_description"]].reset_index(drop=True))
 
-    with st.expander("📋 Note Appearance Matrix (hash × run)"):
+    with st.expander("Note Appearance Matrix (hash × run)"):
         st.dataframe(note_history.fillna(""))
 
     return result
+
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity

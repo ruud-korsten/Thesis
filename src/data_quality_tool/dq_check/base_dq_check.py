@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 from data_quality_tool.config.logging_config import get_logger
 
@@ -57,22 +59,25 @@ class MismatchCheck(BaseDQCheck):
         super().__init__(df)
         self.expected_dtypes = expected_dtypes
 
-    def is_mismatch(self, val, expected_type):
+    def is_mismatch(self, val, expected_type, col_name=None):
         if pd.isna(val):
             return False
+
         try:
             if expected_type.kind in 'iufc':  # numeric types
                 float(val)
             elif expected_type.kind == 'b':  # boolean
-                return not isinstance(val, bool)
+                if not isinstance(val, bool):
+                    return True
             elif expected_type.kind == 'M':  # datetime
                 pd.to_datetime(val)
             elif expected_type.kind in 'OUS':  # string-like
                 str(val)
             else:
+                logger.debug(f"[TypeMismatch] {col_name}: Unknown type kind '{expected_type.kind}'")
                 return False
             return False
-        except Exception:
+        except Exception as e:
             return True
 
     def check(self):
@@ -115,10 +120,12 @@ class DataQualityChecker:
 
     def run_all_checks(self):
         logger.info("Running all data quality checks")
-
-        mv = MissingValueCheck(self.df)
-        mv.check()
-        self.reports.update(mv.get_reports())
+        disable_missing = os.getenv("DISABLE_MISSING", "False").lower() == "true"
+        logger.debug("DISABLE_MISSING: %s", disable_missing)
+        if not disable_missing:
+            mv = MissingValueCheck(self.df)
+            mv.check()
+            self.reports.update(mv.get_reports())
 
         dc = DuplicateCheck(self.df)
         dc.check()
@@ -133,13 +140,15 @@ class DataQualityChecker:
         return self.reports
 
     def generate_violation_mask(self) -> pd.DataFrame:
+        disable_missing = os.getenv("DISABLE_MISSING", "False").lower() == "true"
         """Generates a cell-level mask for standard DQ issues."""
         logger.info("Generating standard DQ violation mask...")
         mask_df = pd.DataFrame("", index=self.df.index, columns=self.df.columns)
 
         # === Missing Values
-        missing_mask = self.df.isnull()
-        mask_df = mask_df.mask(missing_mask, "MISSING")
+        if not disable_missing:
+            missing_mask = self.df.isnull()
+            mask_df = mask_df.mask(missing_mask, "MISSING")
 
         # === Duplicates
         duplicates = self.df.duplicated(keep="first")

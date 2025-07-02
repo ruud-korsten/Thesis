@@ -1,0 +1,2 @@
+dataset,size,model,features,error_level,mean_accuracy,mean_f1,std_f1,mean_latency,mean_tokens,runs_count
+wallmart,Large,gpt-4o-mini,RCIOnly,0.01,0.8010119,0.203650699970808,0.02029766540824565,80.87288174629211,10586,5

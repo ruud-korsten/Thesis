@@ -1,33 +1,61 @@
 [
   {
     "id": "R001",
-    "name": "Valid Age Range",
+    "name": "Non-negative Age",
+    "type": "range",
+    "column": "Age",
+    "condition": {
+      "min": 0
+    },
+    "message": "Age must not be negative.",
+    "provenance": "Non-negative values are expected for Age as negative ages are nonsensical."
+  },
+  {
+    "id": "R002",
+    "name": "Logical Age Range",
     "type": "range",
     "column": "Age",
     "condition": {
       "min": 0,
       "max": 120
     },
-    "message": "Age must be between 0 and 120."
-  },
-  {
-    "id": "R002",
-    "name": "Hospital_ID Format",
-    "type": "pattern",
-    "column": "Hospital_ID",
-    "condition": {
-      "regex": "^H\\d{3}$"
-    },
-    "message": "Hospital_ID must follow the format HXXX, where XXX are 3 digits."
+    "message": "Age should be within a plausible range for humans (0-120 years).",
+    "provenance": "Logical age distribution aligns with typical human lifespans."
   },
   {
     "id": "R003",
-    "name": "Valid Gender Values",
+    "name": "Non-negative Lab Results",
+    "type": "range",
+    "column": "Lab_Results",
+    "condition": {
+      "min": 0
+    },
+    "message": "Lab results must not be negative.",
+    "provenance": "Non-negative values are expected for numeric lab results as negative values are nonsensical."
+  },
+  {
+    "id": "R004",
+    "name": "Gender Consistency",
     "type": "pattern",
     "column": "Gender",
     "condition": {
-      "regex": "^(Male|Female)$"
+      "pattern": "^(Male|Female)$"
     },
-    "message": "Gender must be either 'Male' or 'Female'."
+    "message": "Gender should be consistently represented as 'Male' or 'Female'.",
+    "provenance": "Consistent gender representation is expected using a defined set of values."
+  },
+  {
+    "id": "R005",
+    "name": "Non-null Critical Fields",
+    "type": "not_null",
+    "columns": [
+      "Diagnosis",
+      "Symptoms",
+      "Medications",
+      "Lab_Results"
+    ],
+    "condition": {},
+    "message": "Critical fields like Diagnosis, Symptoms, Medications, and Lab Results should not be null.",
+    "provenance": "Completeness is essential for patient care, requiring these fields to be non-null."
   }
 ]

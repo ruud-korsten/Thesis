@@ -1,0 +1,65 @@
+1. **InvoiceNo**  
+   - Meaning: A unique identifier for each invoice.  
+   - Data Type: Object; categorized as unique ID.  
+   - Data Quality Expectations:  
+     - Must be a non-empty string.  
+     - Should not contain invalid characters or formats (e.g., should not be purely numeric).  
+     - Duplicate values may indicate data entry errors or incorrect invoice processing.
+
+2. **StockCode**  
+   - Meaning: A unique identifier for each stock item.  
+   - Data Type: Object; categorized as unique ID.  
+   - Data Quality Expectations:  
+     - Must be a non-empty string.  
+     - Should follow a specific format if applicable (e.g., alphanumeric).  
+     - Values should not contain invalid characters.  
+     - Duplicate values may indicate multiple entries for the same item.
+
+3. **Description**  
+   - Meaning: A textual description of the stock item being sold.  
+   - Data Type: Object; categorized as categorical.  
+   - Data Quality Expectations:  
+     - Should not contain empty or null values.  
+     - Unexpected or generic descriptions (e.g., "nan") should be flagged for review.  
+     - Length of descriptions should be reasonable; excessively long descriptions may indicate data entry errors.
+
+4. **Quantity**  
+   - Meaning: The number of units sold in the invoice.  
+   - Data Type: Object; categorized as numerical.  
+   - Data Quality Expectations:  
+     - Must be a positive integer (>= 0).  
+     - Should not contain invalid values such as "error_value".  
+     - Extreme outliers (e.g., values significantly higher than the mean) should be flagged for review.
+
+5. **InvoiceDate**  
+   - Meaning: The date and time when the invoice was created.  
+   - Data Type: Datetime64[ns]; categorized as timestamp.  
+   - Data Quality Expectations:  
+     - Must be a valid date and time format.  
+     - Dates should fall within a reasonable range for the business (e.g., should not predate the company's establishment).  
+     - Future dates should be flagged as potential errors.
+
+6. **UnitPrice**  
+   - Meaning: The price per unit of the stock item.  
+   - Data Type: Object; categorized as numerical.  
+   - Data Quality Expectations:  
+     - Must be a positive number (>= 0).  
+     - Should not contain invalid values such as "error_value".  
+     - Extreme outliers (e.g., prices significantly higher than the mean) should be flagged for review.
+
+7. **CustomerID**  
+   - Meaning: A unique identifier for each customer.  
+   - Data Type: Object; categorized as unique ID.  
+   - Data Quality Expectations:  
+     - Must be a non-empty string.  
+     - Should follow a specific format if applicable (e.g., alphanumeric).  
+     - Values like "error_value" should be flagged for review.  
+     - Duplicate values may indicate multiple purchases by the same customer, which is valid, but should be checked for consistency.
+
+8. **Country**  
+   - Meaning: The country where the customer is located.  
+   - Data Type: Object; categorized as categorical.  
+   - Data Quality Expectations:  
+     - Should not contain empty or null values.  
+     - Expected to match a predefined list of valid country names.  
+     - Values like "nan" or unexpected entries should be flagged for review.

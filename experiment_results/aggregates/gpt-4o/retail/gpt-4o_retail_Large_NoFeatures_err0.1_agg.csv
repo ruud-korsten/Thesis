@@ -1,0 +1,2 @@
+dataset,size,model,features,error_level,mean_accuracy,mean_f1,std_f1,mean_latency,mean_tokens,runs_count
+retail,Large,gpt-4o,NoFeatures,0.1,0.9586504166666666,0.9128508332445845,0.014167744243547747,24.79927763938904,2905.6,5

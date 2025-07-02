@@ -10,6 +10,7 @@ from utils.load_summary import (
     load_rule_and_note_definitions,
 )
 from data_quality_tool.evaluation.final_validation import FinalValidator
+from data_quality_tool.evaluation.explain_helpers import explain_selected_rule_or_note
 from utils.session_state_helper import clear_all_filters
 import sys
 import os
@@ -175,8 +176,6 @@ def render_detailed_tab_with_interactions(run_path):
         print(f"  Description: {desc}")
         print(f"  Matched Columns: {matched_columns}")
         print(f"  Violations: {violations}")
-        if not matched_columns:
-            st.text(f"[DEBUG] No column match for note '{note_id}': {desc}")
 
         notes.append({
             "id": note_id,
@@ -305,44 +304,22 @@ def render_detailed_tab_with_interactions(run_path):
         print("Dataset columns:", dataset.columns.tolist())
         print("Prediction mask columns:", pred_mask.columns.tolist())
 
-        if active_rules or active_notes:
-            styled, filtered_rows = filter_and_highlight(dataset, pred_mask, active_rules, active_notes)
-            display_df = dataset[filtered_rows]
+        # General filters
+        missing = st.session_state.get("checkbox_missing")
+        duplicates = st.session_state.get("checkbox_duplicates")
+        type_mismatch = st.session_state.get("checkbox_type_mismatch")
 
-        elif st.session_state.get("checkbox_missing"):
-            display_df = dataset[dataset.isnull().any(axis=1)]
+        # Pass all filters
+        styled, filtered_rows = filter_and_highlight(
+            dataset, pred_mask, active_rules, active_notes,
+            missing=missing, duplicates=duplicates, type_mismatch=type_mismatch
+        )
+        display_df = dataset[filtered_rows]
 
-            def highlight_missing(val):
-                return "background-color: red; color: white" if pd.isnull(val) else ""
-
-            styled = display_df.style.applymap(highlight_missing)
-
-        elif st.session_state.get("checkbox_duplicates"):
-            display_df = dataset[dataset.duplicated()]
-            styled = display_df.style.applymap(
-                lambda x: "background-color: orange; color: black"
-            )
-
-        elif st.session_state.get("checkbox_type_mismatch"):
-            type_mismatch_mask = pred_mask.applymap(
-                lambda x: isinstance(x, str) and "TYPE_MISMATCH" in x
-            )
-            display_df = dataset[type_mismatch_mask.any(axis=1)]
-
-            def highlight_type_mismatch(val, is_mismatch):
-                return "background-color: purple; color: white" if is_mismatch else ""
-
-            styled = display_df.style.apply(
-                lambda row: [
-                    highlight_type_mismatch(val, type_mismatch_mask.loc[row.name, col])
-                    for col, val in row.items()
-                ],
-                axis=1
-            )
-
-        else:
+        # fallback if nothing is selected
+        if not filtered_rows.any():
             display_df = dataset
-            styled = None  # fallback: unstyled full dataset
+            styled = None
 
         # --- Display the styled DataFrame with pagination ---
         if styled is not None:
@@ -377,6 +354,36 @@ def render_detailed_tab_with_interactions(run_path):
             st.markdown("### Root cause explanation")
             st.info(explanation)
 
+        # --- Rule or Note Selection Dropdown ---
+        st.markdown("### Select Rule or Note")
+        options = [
+            {"type": "Rule", "id": r["id"], "label": f"Rule: {r['id']} - {r['name']}", "description": r["description"]}
+            for r in rules
+        ] + [
+            {"type": "Note", "id": n["id"], "label": f"Note: {n['id']} - {n['name']}", "description": n["description"]}
+            for n in notes
+        ]
+
+        selected_option = st.selectbox(
+            "Select a specific rule or note to view its description:",
+            options,
+            format_func=lambda x: x["label"] if x else "None"
+        )
+
+        if selected_option:
+            st.markdown(f"**{selected_option['type']} Description:**")
+            st.info(selected_option["description"])
+
+        # --- Explanation Trigger Button ---
+        if selected_option:
+            if st.button("Explain selected logic", disabled=(selected_option is None)):
+                selected_type = selected_option.get("type")
+                selected_id = selected_option.get("id")
+                explanation = explain_selected_rule_or_note(run_path, selected_type, selected_id)
+                st.markdown("### Rule/Note Explanation")
+                st.info(explanation)
+
+
 def render_historical_tab(domain_path):
     st.title("Historical Data Quality Trends")
 
@@ -410,7 +417,7 @@ def render_historical_tab(domain_path):
     run_paths = all_runs[-num_runs_to_show:]
 
     # --- Overview Summary ---
-    st.markdown("### 📊 Overview Summary")
+    st.markdown("### Overview Summary")
     summary_cols = st.columns(3)
     with summary_cols[0]:
         st.metric(label="Total Runs", value=f"{len(run_paths)}")
@@ -529,9 +536,9 @@ def render_historical_tab(domain_path):
             bg_color = f"rgb({255 - blue_intensity}, {255 - blue_intensity}, 255)"
 
             drift_level = (
-                "✅ Good" if avg_score > 85 else
-                "⚠️ Moderate" if avg_score > 65 else
-                "🚨 High Drift"
+                "Good" if avg_score > 85 else
+                "Moderate" if avg_score > 65 else
+                "High Drift"
             )
 
             st.markdown(f"### Prediction Similarity (Last {num_runs_to_show} Runs)")
@@ -555,9 +562,8 @@ def render_historical_tab(domain_path):
             )
 
     # --- Note Drift Analysis ---
-    st.subheader("🧠 Note Function Drift Across Runs")
+    st.subheader("Note Function Drift Across Runs")
     try:
-
         result = track_note_function_changes_across_runs(run_paths)
         note_stats = result["note_stats"]
         note_stats = add_semantic_note_clusters(note_stats)
@@ -568,21 +574,19 @@ def render_historical_tab(domain_path):
             **result["change_summary"]
         })
 
-        color_map = {"stable": "✅", "intermittent": "🟡", "unique": "🆕"}
-        note_stats["Status Icon"] = note_stats["status"].map(color_map)
+        st.markdown("#### Notes Grouped by Semantic Cluster")
+        for cluster, group in note_stats.groupby("cluster_id"):
+            st.markdown(f"**Cluster {cluster}**")
+            st.dataframe(group[["status", "runs_seen", "example_description"]].reset_index(drop=True))
 
-        st.dataframe(note_stats[[
-            "Status Icon", "status", "runs_seen", "example_description", "cluster_id"
-        ]])
-
-        with st.expander("📋 Note Appearance Matrix (hash × run)"):
+        with st.expander("Note Appearance Matrix (hash × run)"):
             st.dataframe(result["note_history"].fillna(""))
 
     except Exception as e:
         st.warning(f"Unable to compute note changes: {e}")
 
     # --- Rule Drift Analysis ---
-    st.subheader("📜 Rule Definition Drift Across Runs")
+    st.subheader("Rule Definition Drift Across Runs")
     try:
         rule_result = track_rule_changes_across_runs(run_paths)
         if rule_result is not None:
@@ -600,7 +604,7 @@ def render_historical_tab(domain_path):
                 "rule_id", "description", "column", "type", "runs_seen"
             ]])
 
-            with st.expander("📋 Rule Appearance Matrix (hash × run)"):
+            with st.expander("Rule Appearance Matrix (hash × run)"):
                 st.dataframe(rule_history)
         else:
             st.info("No rules.json files found in selected runs.")

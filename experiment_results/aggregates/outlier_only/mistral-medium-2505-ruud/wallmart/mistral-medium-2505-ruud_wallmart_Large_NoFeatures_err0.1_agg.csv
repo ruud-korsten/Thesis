@@ -1,0 +1,2 @@
+dataset,size,model,features,error_level,mean_accuracy,mean_f1,std_f1,mean_latency,mean_tokens,runs_count
+wallmart,Large,mistral-medium-2505-ruud,NoFeatures,0.1,0.9656744333333334,0.028380952380952378,0.06346173878999403,25.746788215637206,2374.6,5

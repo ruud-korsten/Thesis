@@ -1,0 +1,2 @@
+dataset,size,model,features,error_level,mean_accuracy,mean_f1,std_f1,mean_latency,mean_tokens,runs_count
+retail,Large,deepseek-chat,NoFeatures,0.1,0.9486509166666667,0.8966194524486029,0.016883830049600125,58.91227831840515,2660.4,5

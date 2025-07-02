@@ -1,0 +1,5 @@
+There are 3 equipment_types: AHU, VAV, and Pressure_Sensor.
+sensor_status must be null or 1.
+All sensor value columns must fall within a realistic range (e.g.: humidity_pct must be a percentage).
+Extreme outliers in sensor values must be flagged.
+Check the ranges of all sensor values and set boundaries for possible erroneous values.

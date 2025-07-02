@@ -1,4 +1,8 @@
 [
-  "Patient_ID should be checked for outliers since it is numeric.",
-  "Age values outside the 0-120 range should be flagged as invalid."
+  "`Patient_ID` and `Hospital_ID` should be unique within their respective contexts to ensure distinct identification of patients and hospitals.",
+  "Diagnoses and symptoms should logically correlate, meaning symptoms listed should be relevant to the diagnoses given.",
+  "Medications should correspond to the diagnoses and symptoms, following standard medical practices.",
+  "Temporal logic should be applied to dates and sequences, ensuring logical chronological order in related datasets like `Encounter_Visits`.",
+  "The dataset is used to evaluate hospital performance, patient outcomes, and treatment efficacy, thus requiring high data quality and accuracy.",
+  "Lab results should be interpreted within the context of specified reference ranges, and flags (e.g., \"Normal\", \"Abnormal\") should be used to highlight significant deviations."
 ]

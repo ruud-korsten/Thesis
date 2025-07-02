@@ -1,7 +1,10 @@
 import os
 import pandas as pd
+import numpy as np
 from dotenv import load_dotenv
 import glob
+import shutil
+from pathlib import Path
 from data_quality_tool.config.logging_config import get_logger
 from data_quality_tool.data.dataset_selection import load_dataset
 from data_quality_tool.domain.domain_extractor import DomainExtractor
@@ -34,7 +37,7 @@ logger = get_logger()
 DATASET_NAME = os.getenv("DATASET_NAME")
 DATASET_DIRTY = os.getenv("DATASET_DIRTY", "False").lower() == "true"
 GROUND_TRUTH_MASK = get_ground_truth_mask_path(DATASET_NAME, dirty=DATASET_DIRTY)
-DOMAIN_SAVE_DIR = os.getenv("DOMAIN_SAVE_DIR", "domain_knowledge")
+DOMAIN_SAVE_DIR = os.getenv("DOMAIN_SAVE_DIR", "domain_knowledge/llm")
 RULES_CACHE_PATH = os.getenv("RULES_CACHE_PATH", "artifacts/dq_rules.json")
 RULES_RCI = os.getenv("RULES_RCI", "False").lower() == "true"
 NOTES_REFRESH = os.getenv("NOTES_REFRESH", "False").lower() == "true"
@@ -44,7 +47,9 @@ DOMAIN_EXTRACTOR = os.getenv("DOMAIN_EXTRACTOR", "False").lower() == "true"
 LAST_DATASET_FILE = "artifacts/last_dataset_used.txt"
 ACCURACY_PATH="artifacts/accuracy.json"
 FINAL_VALIDATION = os.getenv("FINAL_VALIDATION", "False").lower() == "true"
-
+SMALL_DATASET = os.getenv("SMALL_DATASET", "False").lower() == "true"
+KEEP_ALL_RUNS = os.getenv("KEEP_ALL_RUNS", "True").lower() == "true"
+MULTI_DOMAIN_EXTRACTION = os.getenv("MULTI_DOMAIN_EXTRACTION", "False").lower() == "true"
 
 def should_force_refresh_based_on_dataset(dataset_name: str, dirty: bool) -> bool:
     """
@@ -104,23 +109,26 @@ def run_rule_engine(df: pd.DataFrame, rules: list[dict]) -> tuple[pd.DataFrame, 
 
     return result_df, executor
 
-def run_and_evaluate_note_engine(notes: list[str], df: pd.DataFrame) -> dict:
+def run_and_evaluate_note_engine(notes: list[str], df: pd.DataFrame, use_rci: bool = None) -> tuple[dict, list[dict]]:
     if not notes:
         logger.info("No domain notes found to process.")
-        return {}
+        return {}, []
+
+    if use_rci is None:
+        use_rci = os.getenv("NOTES_RCI", "False").lower() == "true"
 
     logger.info(
         "Running Note Engine on domain insights with NOTES_REFRESH=%s and NOTES_RCI=%s",
-        NOTES_REFRESH, NOTES_RCI
+        NOTES_REFRESH, use_rci
     )
 
     note_engine = NoteEngine()
-    note_functions = note_engine.run(
+    note_functions, note_usage_stats = note_engine.run(
         notes=notes,
         df=df,
         cache_path="artifacts/note_functions.json",
         force_refresh=NOTES_REFRESH,
-        use_rci=NOTES_RCI
+        use_rci=use_rci
     )
 
     logger.info("Evaluating generated data quality checks...")
@@ -132,21 +140,18 @@ def run_and_evaluate_note_engine(notes: list[str], df: pd.DataFrame) -> dict:
 
     logger.info("Summary: %d passed, %d failed", len(passed), len(failed))
 
-    # Log passed notes
     for note, result in passed.items():
         logger.info("\n---\nNote: %s", note)
         logger.info("Function: %s", result["function_name"])
         logger.info("Violations flagged: %d", result["violations"])
         logger.debug("Code:\n%s", result["code"])
 
-    # Log failed notes
     for note, result in failed.items():
         logger.warning("\n---\nNote FAILED: %s", note)
         logger.warning("Error: %s", result["error"])
         logger.debug("Code:\n%s", result["code"])
 
-    # Return unified structure
-    return results
+    return results, note_usage_stats
 
 def main():
     save_path = f"{DOMAIN_SAVE_DIR}/{DATASET_NAME}.txt"
@@ -156,32 +161,99 @@ def main():
     logger.info("=" * 30 + " [1. DATA LOADING & INJECTION] " + "=" * 30)
 
     df, expected_dtypes, domain_path = load_dataset(DATASET_NAME, dirty=DATASET_DIRTY)
+    if SMALL_DATASET:
+        df = df.head(10000)
+
+    if DATASET_NAME == "energy":
+        # Set 3 random indexes where usage < 10000 to a high value
+        mask = df["usage"] < 10000
+        eligible_indices = df[mask].sample(3, random_state=42).index
+        df.loc[eligible_indices, "usage"] = 1e8  # Or any high value
+
+        # Make 4 random usage cells empty (NaN)
+        empty_indices = df.sample(4, random_state=43).index
+        df.loc[empty_indices, "usage"] = np.nan
+
+        # Inject negative values in both usage and return columns, in the same 2 rows
+        neg_indices = df.sample(2, random_state=44).index
+        df.loc[neg_indices, "usage"] = -1 * np.abs(df.loc[neg_indices, "usage"].fillna(1))
+        df.loc[neg_indices, "return"] = np.random.uniform(0, 5) * -1
+
+        # Set 3 random date values to a future date
+        future_date = pd.Timestamp("2026-01-01", tz="UTC")
+        future_date_indices = df.sample(3, random_state=45).index
+        df.loc[future_date_indices, "datetime_recorded"] = future_date
+
+        # Make datetime_recorded timezone naive
+        df["datetime_recorded"] = pd.to_datetime(df["datetime_recorded"]).dt.tz_localize(None)
+
     logger.info("Dataset Loaded:\n%s", df.head().to_string(index=False))
     logger.info("Dataset Summary Stats:\n%s", df.describe(include='all').transpose().to_string())
 
     logger.info("=" * 30 + " [2. STANDARD DQ CHECKS] " + "=" * 30)
-
-    # Traditional Checks
     run_basic_dq(df, expected_dtypes=expected_dtypes)
+
+    all_usage = []
 
     if DOMAIN_EXTRACTOR:
         logger.info("=" * 30 + " [DOMAIN EXTRACTION] " + "=" * 30)
-        extractor = DomainExtractor()
-        domain_output = extractor.extract_domain_knowledge(df, save_path=save_path)
 
-        logger.info("Extracted Domain Knowledge:\n%s", domain_output["response"])
+        if MULTI_DOMAIN_EXTRACTION:
+            from data_quality_tool.domain.domain_extractor import DomainExtractorMultiple
+
+            # Load additional datasets for this domain
+            domain_dir = f"data/{DATASET_NAME}/raw"
+            context_dfs = {}
+            if os.path.exists(domain_dir):
+                for file in os.listdir(domain_dir):
+                    if file.endswith(".xlsx"):
+                        try:
+                            df_extra = pd.read_excel(os.path.join(domain_dir, file))
+                            key = os.path.splitext(file)[0]
+                            context_dfs[key] = df_extra
+                            logger.info("Loaded context dataset: %s", file)
+                        except Exception as e:
+                            logger.warning("Failed to load %s for multi-domain extraction: %s", file, e)
+
+            # Run domain extraction with primary + context
+            extractor = DomainExtractorMultiple()
+            domain_output = extractor.extract_domain_knowledge(primary_df=df, context_dfs=context_dfs,
+                                                               save_path=save_path)
+
+        else:
+            extractor = DomainExtractor()
+            domain_output = extractor.extract_domain_knowledge(df, save_path=save_path)
+
+        domain_path = save_path
+
+        if isinstance(domain_output, dict) and "usage" in domain_output:
+            all_usage.append({"stage": "domain_extraction", **domain_output["usage"]})
+
+        logger.info("Extracted Domain Knowledge:\n%s", domain_output.get("response", "No response received."))
 
     logger.info("=" * 30 + " [3. RULES & NOTES] " + "=" * 30)
     parser = RuleParser()
     FORCE_REFRESH_DYNAMIC = should_force_refresh_based_on_dataset(DATASET_NAME, DATASET_DIRTY)
 
-    rules, notes = parser.parse_rules(
+    rules, notes, rule_usage = parser.parse_rules(
         rules_path=domain_path,
         cache_path=RULES_CACHE_PATH,
         force_refresh=FORCE_REFRESH_DYNAMIC,
         df=df,
         use_rci=RULES_RCI
     )
+
+    if RULES_RCI:
+        for substage, usage in rule_usage.items():
+            all_usage.append({
+                "stage": f"rule_parsing/{substage}",
+                **usage
+            })
+    else:
+        all_usage.append({
+            "stage": "rule_parsing",
+            **rule_usage
+        })
 
     logger.info("Rule Extraction Complete. Extracted %d rules.", len(rules))
     logger.info("See %s for full rule output.", RULES_CACHE_PATH)
@@ -193,20 +265,32 @@ def main():
     all_notes = notes + executor.fallback_notes
     logger.info("Total Notes to Evaluate: %d", len(all_notes))
 
-    # Run Note Engine
-    note_results = run_and_evaluate_note_engine(all_notes, df)
+    note_results, note_usage_stats = run_and_evaluate_note_engine(all_notes, df)
+    for note, usage in note_usage_stats.items():
+        print(note,usage)
+        for substage, subusage in usage.items():
+            all_usage.append({
+                "stage": f"note_engine/{substage}",
+                "note": note,
+                **subusage
+            })
 
-    # Retry failed notes using feedback loop
+
     feedback = NoteFeedbackLoop(df=df)
-    repaired_notes = feedback.retry_failed_notes(note_results)
-
-    # Merge repaired notes into the original note_results
+    repaired_notes, retry_usage = feedback.retry_failed_notes(note_results)
     for note, result in repaired_notes.items():
         if "error" not in result:
             note_results["passed"][note] = result
-            note_results["failed"].pop(note, None)  # Remove from failed set if recovered
+            note_results["failed"].pop(note, None)
         else:
-            note_results["failed"][note] = result  # Update with retry error
+            note_results["failed"][note] = result
+
+    for note, usage in retry_usage.items():
+        all_usage.append({
+            "stage": "note_retry",
+            "note": note,
+            **usage
+        })
 
     inspect_note_violations(df, note_results)
 
@@ -225,16 +309,72 @@ def main():
     final_validation = None
     if FINAL_VALIDATION:
         validator = FinalValidator(run_dir="artifacts", dataset=df)
-        final_validation = validator.validate()
+        final_validation, validation_usage = validator.validate()
+        all_usage.append({"stage": "final_validation", **validation_usage})
         logger.info("Validation Feedback:\n%s", final_validation)
 
-    save_run_snapshot(
+    run_dir = save_run_snapshot(
         dataset_name=DATASET_NAME,
         pred_mask=mask_df,
         true_mask_path=GROUND_TRUTH_MASK,
         dataset=df,
         run_accuracy=accuracy if accuracy else None,
-        final_validation=final_validation
+        final_validation=final_validation,
+        domain_file_dir=domain_path
+    )
+
+    # Ensure Windows path separator compatibility
+    run_dir_path = Path(run_dir)
+    parent_run_folder = run_dir_path.parent
+    latest_run_name = run_dir_path.name
+
+    if not KEEP_ALL_RUNS:
+        logger.info("SAVE_ALL_RUNS is False — removing older runs in: %s", parent_run_folder)
+        for subdir in parent_run_folder.iterdir():
+            if subdir.is_dir() and subdir.name != latest_run_name:
+                try:
+                    shutil.rmtree(subdir)
+                    logger.info("Deleted old run directory: %s", subdir)
+                except Exception as e:
+                    logger.warning("Could not delete directory %s: %s", subdir, e)
+    else:
+        logger.info("KEEP_ALL_RUNS is True — keeping all run folders.")
+
+    # Optionally log or save usage summary
+    logger.debug("All usage entries:")
+    for i, u in enumerate(all_usage):
+        logger.debug("  %d: type=%s value=%s", i, type(u), repr(u))
+
+    logger.info("Token and cost summary:")
+
+    total_prompt_tokens = 0
+    total_completion_tokens = 0
+    total_tokens = 0
+    total_cost = 0.0
+
+    for usage in all_usage:
+        if isinstance(usage, dict) and "total_tokens" in usage and "estimated_cost" in usage:
+            logger.info(
+                "%s: %d prompt, %d completion, %d total tokens, $%.5f",
+                usage.get("stage", "unknown"),
+                usage.get("prompt_tokens", 0),
+                usage.get("completion_tokens", 0),
+                usage["total_tokens"],
+                usage["estimated_cost"]
+            )
+            total_prompt_tokens += usage.get("prompt_tokens", 0)
+            total_completion_tokens += usage.get("completion_tokens", 0)
+            total_tokens += usage["total_tokens"]
+            total_cost += usage["estimated_cost"]
+        else:
+            logger.warning("Skipping malformed usage entry: %s", usage)
+
+    logger.info(
+        "TOTAL USAGE: %d prompt, %d completion, %d total tokens, $%.5f",
+        total_prompt_tokens,
+        total_completion_tokens,
+        total_tokens,
+        total_cost
     )
 
 

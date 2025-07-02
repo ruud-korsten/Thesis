@@ -48,6 +48,7 @@ class RuleRCIAgent:
 
         ### Critique (write a bulleted list starting with "**Critique:**")
         {checklist}
+        "Do **not** use EMOJIS and Unicode characters!"
         """).strip()
 
     def build_improvement_prompt(self,
@@ -90,24 +91,34 @@ class RuleRCIAgent:
         - ...
 
         Do **not** add commentary before or after those sections.
+        "Do **not** use EMOJIS and Unicode characters!"
         """).strip()
 
     def run_rci_pipeline(self, messages: str, domain_text: str, df_columns: list[str]) -> dict:
         logger.info("Running RuleRCI pipeline")
 
-        initial_output = self.llm.call(messages=messages)
+        # Step 1: Initial call
+        initial_output, usage_initial = self.llm.call(messages=messages)
         logger.debug("Initial output received:\n%s", initial_output)
 
+        # Step 2: Critique phase
         critique_prompt = self.build_critique_prompt(initial_output, domain_text, df_columns)
-        critique = self.llm.call(prompt=critique_prompt)
+        critique, usage_critique = self.llm.call(prompt=critique_prompt)
         logger.debug("Critique received:\n%s", critique)
 
+        # Step 3: Improve phase
         improve_prompt = self.build_improvement_prompt(initial_output, critique, domain_text, df_columns)
-        improved_output = self.llm.call(prompt=improve_prompt)
+        improved_output, usage_improve = self.llm.call(prompt=improve_prompt)
         logger.debug("Improved output received:\n%s", improved_output)
 
         return {
             "initial_output": initial_output,
             "critique": critique,
-            "improved_output": improved_output
+            "improved_output": improved_output,
+            "token_usage": {
+                "initial": usage_initial,
+                "critique": usage_critique,
+                "improve": usage_improve
+            }
         }
+

@@ -1,0 +1,2 @@
+dataset,size,model,features,error_level,mean_accuracy,mean_f1,std_f1,mean_latency,mean_tokens,runs_count
+wallmart,Medium,gpt-4o-mini,DomainOnly,0.1,0.807219,0.6972533738745385,0.027399602214567335,35.49261846542358,5687.8,5

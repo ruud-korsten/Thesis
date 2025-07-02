@@ -1,0 +1,2 @@
+dataset,size,model,features,error_level,mean_accuracy,mean_f1,std_f1,mean_latency,mean_tokens,runs_count
+health,Large,gpt-4o-mini,Domain+RCI,0.1,0.9712197638888889,0.9432058414150666,0.04727115355629311,134.25012006759644,19018.4,5

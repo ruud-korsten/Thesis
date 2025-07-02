@@ -1,0 +1,6 @@
+dataset,size,model,features,error_level,run_index,accuracy,f1,precision,recall,runtime_seconds,tokens_total,tokens_prompt,tokens_completion,cost_usd
+wallmart,Large,mistral-medium-2505-ruud,NoFeatures,0.1,1,0.92792,0.1419047619047619,0.09266169154228855,0.30284552845528456,36.50585150718689,2403,1851,552,0.0018444
+wallmart,Large,mistral-medium-2505-ruud,NoFeatures,0.1,2,0.975185,0.0,0.0,0.0,23.182396173477173,2103,1606,497,0.0016363999999999999
+wallmart,Large,mistral-medium-2505-ruud,NoFeatures,0.1,3,0.9750266666666667,0.0,0.0,0.0,28.398305654525757,2515,1849,666,0.0020716
+wallmart,Large,mistral-medium-2505-ruud,NoFeatures,0.1,4,0.9752125,0.0,0.0,0.0,20.47883439064026,2432,1852,580,0.0019007999999999998
+wallmart,Large,mistral-medium-2505-ruud,NoFeatures,0.1,5,0.975028,0.0,0.0,0.0,20.168553352355957,2420,1849,571,0.0018816000000000002

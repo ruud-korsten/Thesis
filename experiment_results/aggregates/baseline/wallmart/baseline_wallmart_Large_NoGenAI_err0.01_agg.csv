@@ -1,0 +1,2 @@
+dataset,size,model,features,error_level,mean_accuracy,mean_f1,std_f1,mean_latency,mean_tokens,runs_count
+wallmart,Large,baseline,NoGenAI,0.01,0.8009707,0.20390691553531898,0.01937380567060683,8.864542245864868,0,5

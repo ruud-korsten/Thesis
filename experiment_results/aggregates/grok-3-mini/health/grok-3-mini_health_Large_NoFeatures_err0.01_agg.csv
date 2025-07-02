@@ -1,0 +1,2 @@
+dataset,size,model,features,error_level,mean_accuracy,mean_f1,std_f1,mean_latency,mean_tokens,runs_count
+health,Large,grok-3-mini,NoFeatures,0.01,0.9982177222222223,0.9690792589829739,0.02894838912370833,96.23470902442932,7012,5

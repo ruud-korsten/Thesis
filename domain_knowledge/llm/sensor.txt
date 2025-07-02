@@ -1,0 +1,57 @@
+1. **timestamp**: Timestamp indicating when the data was recorded. Data type: timestamp.  
+   - Must be in a valid datetime format (e.g., YYYY-MM-DD HH:MM:SS).  
+   - Should not have future dates beyond the current date.  
+   - Should be unique for each equipment reading within a short time frame (e.g., less than a few seconds apart).
+
+2. **equipment_type**: Categorical identifier for the type of equipment (e.g., VAV, Pressure_Sensor, AHU). Data type: categorical.  
+   - Must be one of the predefined types (e.g., {VAV, Pressure_Sensor, AHU}).  
+   - Should not contain null or empty values.  
+
+3. **equipment_id**: Unique identifier for each piece of equipment. Data type: unique ID.  
+   - Must follow a specific format (e.g., `VAV_X`, `PS_X`, `AHU_X`, where X is a number).  
+   - Should not contain null or empty values.  
+
+4. **temperature_c**: Numerical measurement of temperature in degrees Celsius. Data type: numerical.  
+   - Must be within a plausible range for typical operational environments (e.g., -20 to 50 degrees Celsius).  
+   - Values should not be equal to known problematic values such as `error_value`.  
+   - Extreme outliers beyond 3 standard deviations from the mean should be flagged.  
+
+5. **pressure_kpa**: Numerical measurement of pressure in kilopascals. Data type: numerical.  
+   - Must be within a plausible operational range (e.g., 80 to 120 kPa for HVAC systems).  
+   - Should not be equal to known problematic values such as `error_value`.  
+   - Extreme outliers beyond 3 standard deviations from the mean should be flagged.  
+
+6. **humidity_pct**: Numerical measurement of humidity percentage. Data type: numerical.  
+   - Must be within a valid range (e.g., 0 to 100 percent).  
+   - Should not be equal to known problematic values such as `error_value`.  
+   - Extreme outliers beyond 3 standard deviations from the mean should be flagged.  
+
+7. **airflow_cfm**: Numerical measurement of airflow in cubic feet per minute. Data type: numerical.  
+   - Must be a non-negative value (e.g., greater than or equal to 0).  
+   - Should not be equal to known problematic values such as `error_value`.  
+   - Extreme outliers beyond 3 standard deviations from the mean should be flagged.  
+
+8. **fan_speed_pct**: Numerical measurement of fan speed percentage. Data type: numerical.  
+   - Must be within a valid range (e.g., 0 to 100 percent).  
+   - Should not be equal to known problematic values such as `error_value`.  
+   - Extreme outliers beyond 3 standard deviations from the mean should be flagged.  
+
+9. **filter_status**: Categorical status of the filter, indicating whether it is clean, dirty, or needs change. Data type: categorical.  
+   - Must not contain null or empty values.  
+   - Should follow predefined categories (e.g., {clean, dirty, needs_change}).  
+   - Should not contain known problematic values such as `error_value`.  
+
+10. **damper_position_pct**: Numerical measurement of the damper position percentage. Data type: numerical.  
+    - Must be within a valid range (e.g., 0 to 100 percent).  
+    - Should not be equal to known problematic values such as `error_value`.  
+    - Extreme outliers beyond 3 standard deviations from the mean should be flagged.  
+
+11. **zone_occupancy**: Numerical count of occupancy in a zone. Data type: numerical.  
+    - Must be a non-negative integer (e.g., greater than or equal to 0).  
+    - Should not contain known problematic values such as `error_value`.  
+    - Extreme outliers beyond 3 standard deviations from the mean should be flagged.  
+
+12. **sensor_status**: Categorical status indicating the operational state of the sensor (e.g., functioning, error). Data type: categorical.  
+    - Must not contain null or empty values.  
+    - Should follow predefined categories (e.g., {functioning, error}).  
+    - Should not contain known problematic values such as `error_value`.

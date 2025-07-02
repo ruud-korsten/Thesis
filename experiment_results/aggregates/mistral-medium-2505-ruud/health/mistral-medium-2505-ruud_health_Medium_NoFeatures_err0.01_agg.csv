@@ -1,0 +1,2 @@
+dataset,size,model,features,error_level,mean_accuracy,mean_f1,std_f1,mean_latency,mean_tokens,runs_count
+health,Medium,mistral-medium-2505-ruud,NoFeatures,0.01,0.9965922222222222,0.9386600137476253,0.046408299891350376,22.278886842727662,3119,5

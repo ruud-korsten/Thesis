@@ -59,54 +59,37 @@ def build_violation_mask(df: pd.DataFrame, rule_reports: dict, note_results: dic
     for note, result in note_results.get("passed", {}).items():
         logger.info("Processing note: %s", note)
 
-        # Validate mask
         violations = result.get("violations_mask")
         if not isinstance(violations, pd.Series):
             logger.warning("Note '%s' has no valid violations mask (type: %s)", note, type(violations))
             continue
 
-        logger.debug("Note '%s' - Violation mask dtype: %s | shape: %s | head:\n%s",
-                     note, violations.dtype, violations.shape, violations.head())
-
         violations = violations.fillna(False).astype(bool)
         idx = violations[violations].index
-        logger.debug("Note '%s' - Violation indices (count=%d): %s", note, len(idx), idx.tolist()[:10])
 
         note_id = result.get("id", "NOTE")
         affected_cols = result.get("columns", [])
-        logger.debug(result)
-        logger.debug("Note ID: %s | Initially provided affected columns: %s", note_id, affected_cols)
 
         if not affected_cols:
+            # Fallback: try to infer from Series name
             inferred_col = violations.name
-            logger.debug("Note '%s' - Attempting to infer affected column from Series name: %s", note, inferred_col)
-
             if inferred_col and inferred_col in df.columns:
                 affected_cols = [inferred_col]
-                logger.info("Inferred affected column '%s' for note '%s'.", inferred_col, note)
-            elif violations.index.equals(df.index):
-                numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
-                affected_cols = numeric_cols
-                logger.info("Note '%s' - No specific column, applying to all numeric columns: %s", note, affected_cols)
+                logger.info("Note '%s' - Inferred column from Series name: %s", note, inferred_col)
             else:
-                logger.warning("Note '%s' - Could not infer or match any columns. Skipping.", note)
+                logger.warning("Note '%s' - Could not determine affected columns. Skipping.", note)
                 continue
 
         for col in affected_cols:
             if col not in df.columns:
-                logger.warning("Note '%s' - Column '%s' not found in DataFrame. Skipping.", note_id, col)
+                logger.warning("Note '%s' - Column '%s' not in DataFrame. Skipping.", note_id, col)
                 continue
 
-            logger.debug("Note '%s' - Applying mask to column: %s", note_id, col)
             existing = mask_df.loc[idx, col].fillna("")
-            logger.debug("Note '%s' - Existing values (sample): %s", note_id, existing.head().tolist())
-
             updated = pd.Series(
                 [merge_flags(val, note_id) for val in existing],
                 index=existing.index
             )
-
-            logger.debug("Note '%s' - Updated values (sample): %s", note_id, updated.head().tolist())
             mask_df.loc[idx, col] = updated
 
         logger.info("Note '%s' processing complete.", note)

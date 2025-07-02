@@ -1,0 +1,39 @@
+1. **Store**  
+   - Represents the unique identifier for each store.  
+   - Data type: object; categorized as **unique ID**.  
+   - Data quality expectations:  
+     - Must be a positive integer.  
+     - Cannot contain non-numeric characters or special values (e.g., "error_value").  
+     - Must be within a plausible range, typically corresponding to the number of stores (e.g., 1 to 1000).
+
+2. **Dept**  
+   - Represents the department identifier within a store.  
+   - Data type: object; categorized as **unique ID**.  
+   - Data quality expectations:  
+     - Must be a positive integer.  
+     - Cannot contain non-numeric characters or special values (e.g., "error_value").  
+     - Should be within a plausible range, typically corresponding to the number of departments (e.g., 1 to 100).
+
+3. **Date**  
+   - Represents the date for which the sales data is recorded.  
+   - Data type: object; categorized as **timestamp**.  
+   - Data quality expectations:  
+     - Must follow a valid date format (e.g., YYYY-MM-DD).  
+     - Dates should fall within the operational timeframe of the business (e.g., no future dates).  
+     - Cannot contain non-date values (e.g., "error_value").
+
+4. **Weekly_Sales**  
+   - Represents the total sales for a week at a given store and department.  
+   - Data type: object; categorized as **numerical**.  
+   - Data quality expectations:  
+     - Must be a non-negative number (≥ 0).  
+     - Should not contain non-numeric characters or special values (e.g., "error_value").  
+     - Values should be within a plausible range for weekly sales based on store size and location (e.g., typically should not exceed several hundred thousand).
+
+5. **IsHoliday**  
+   - Indicates whether the week includes a holiday (1 for Yes, 0 for No).  
+   - Data type: float64; categorized as **numerical**.  
+   - Data quality expectations:  
+     - Must be either 0 or 1, as it represents a binary condition.  
+     - Should not contain non-binary values or special values (e.g., NaN, "error_value").  
+     - Should be consistent with known holiday dates based on the year and date context.

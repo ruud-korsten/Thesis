@@ -1,0 +1,2 @@
+dataset,size,model,features,error_level,mean_accuracy,mean_f1,std_f1,mean_latency,mean_tokens,runs_count
+wallmart,Medium,gpt-4o,NoFeatures,0.1,0.8007526666666667,0.6841695401982496,0.02881954173109969,9.73011336326599,2243.4,5

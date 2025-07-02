@@ -29,12 +29,15 @@ def render_dataset_with_slider(dataset_path: str, max_display_rows: int = 1000):
     except Exception as e:
         st.error(f"An error occurred: {e}")
 
-def filter_and_highlight(df, mask_df, rules, notes, row_limit=None):
+def filter_and_highlight(df, mask_df, rules, notes,
+                         missing=False, duplicates=False, type_mismatch=False,
+                         row_limit=None):
+
     filtered_rows = pd.Series(False, index=df.index)
     styles = pd.DataFrame('', index=df.index, columns=df.columns)
     text_color = "color: black"
 
-    # --- Debug Rule Matching ---
+    # --- Rule Matching ---
     for rule in rules:
         if rule["column"] in mask_df.columns:
             rule_mask = mask_df[rule["column"]].astype(str).str.contains(rule["id"], na=False)
@@ -45,7 +48,7 @@ def filter_and_highlight(df, mask_df, rules, notes, row_limit=None):
         else:
             print(f"[RULE WARNING] Column '{rule['column']}' not in mask_df.columns")
 
-    # --- Debug Note Matching ---
+    # --- Note Matching ---
     for note in notes:
         note_id = note["id"]
         color = note.get("color", "#c8e6c9")
@@ -60,6 +63,27 @@ def filter_and_highlight(df, mask_df, rules, notes, row_limit=None):
 
         print(f"[NOTE] {note_id} → matches: {note_mask.sum()} rows")
 
+    # --- General Filters ---
+    if missing:
+        missing_cell_mask = df.isnull()
+        filtered_rows |= missing_cell_mask.any(axis=1)
+        styles = styles.mask(missing_cell_mask, "background-color: red; color: white")
+
+    if duplicates:
+        dup_mask = df.duplicated()
+        filtered_rows |= dup_mask
+        for col in df.columns:
+            styles.loc[dup_mask, col] = "background-color: orange; color: black"
+
+    if type_mismatch:
+        type_mismatch_mask = mask_df.applymap(
+            lambda x: isinstance(x, str) and "TYPE_MISMATCH" in x
+        )
+        tm_mask = type_mismatch_mask.any(axis=1)
+        filtered_rows |= tm_mask
+        for col in mask_df.columns:
+            styles.loc[type_mismatch_mask[col], col] = "background-color: purple; color: white"
+
     print(f"[SUMMARY] Total filtered rows: {filtered_rows.sum()}")
 
     # --- Apply Filters ---
@@ -71,6 +95,7 @@ def filter_and_highlight(df, mask_df, rules, notes, row_limit=None):
         filtered_styles = filtered_styles.head(row_limit)
 
     return filtered_df.style.apply(lambda _: filtered_styles, axis=None), filtered_rows
+
 
 def generate_distinct_colors(ids, saturation=0.7, brightness=0.95, hue_steps=36):
     """

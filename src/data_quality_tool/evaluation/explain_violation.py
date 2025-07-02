@@ -88,12 +88,13 @@ A data row has been flagged for quality issues. Here is the context:
 
 Generate a simple, user-friendly explanation summarizing **why** this row was flagged and what might be wrong.
 Look at the type of data and try to give a clear indication of what the cause of the issue might be.
-        """
+Don't answer with technically advanced language, make sure that domain experts without any technical knowledge about data can very easily understand your explanation.
+"""
 
         logger.debug("LLM prompt:\n%s", prompt)
         explanation = self.llm.call(prompt)
-        logger.info("Generated explanation: %s", explanation.strip())
-        return explanation.strip()
+        logger.info("Generated explanation: %s", explanation[0])
+        return explanation[0]
 
     def _find_rule_desc(self, rule_id: str) -> str:
         return next((r.get("message", "No message") for r in self.rules if r.get("id") == rule_id), "Rule not found")
@@ -118,7 +119,6 @@ Look at the type of data and try to give a clear indication of what the cause of
                 mask = pd.read_csv(os.path.join(run_path, "prediction_mask.csv"), index_col=0)
                 rule_summary = pd.read_csv(os.path.join(run_path, "rule_summary.csv"))
                 note_summary = pd.read_csv(os.path.join(run_path, "note_summary.csv"))
-                print("[RULE_SUMMARY!!!!!!!!!!!!]",rule_summary)
             except Exception as e:
                 logger.warning("Skipping run %s due to read error: %s", run_id, e)
                 continue
@@ -134,10 +134,6 @@ Look at the type of data and try to give a clear indication of what the cause of
             row_data = df.iloc[index]
             mask_data = mask.iloc[index]
 
-            print("[INDEX!!!!!!!!!!!!]",index)
-            print("[ROW_DATA!!!!!!!!!!!!]",row_data)
-            print("[MASK!!!!]",mask)
-            print("[MASK_DATA!!!!!!!!!!!!]",mask_data)
             violations = {}
 
             logger.debug("Run ID: %s", run_id)
@@ -211,8 +207,9 @@ Look at the type of data and try to give a clear indication of what the cause of
         - Be clear and avoid generic advice.
         - The aim of the response is to guide the user on how to solve the problem.
         - Also think of the root cause.
-        - If the a value changed overtime, mention at which time this happened.
-
+        - If the a value changed overtime, mention at which time (using run_ID) this happened.
+        - Don't answer with technically advanced language, make sure that domain experts without technical any knowledge about data can easily understand your explanation.
+        
         Example format:
         Root cause: [Short summary]
         Explanation: [Key changes and logic that caused the violation]
@@ -220,5 +217,5 @@ Look at the type of data and try to give a clear indication of what the cause of
 
         logger.info("Sending row violation history to LLM. Prompt:\n%s", prompt)
         explanation = self.llm.call(prompt)
-        logger.info("Generated explanation: %s", explanation.strip())
-        return explanation.strip()
+        logger.info("Generated explanation: %s", explanation[0])
+        return explanation[0]

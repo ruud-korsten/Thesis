@@ -1,0 +1,25 @@
+1. **Inferred Domain Knowledge**
+
+- `meter_id`: Unique ID; identifies a specific meter. Must be unique and consistent across records. Format should begin with 'sds_' followed by a 32-character hexadecimal string.
+
+- `ean`: Unique ID; represents the European Article Number associated with the meter. Must be unique and consistent across records. Should follow the pattern `XXXXXXXXX_XXXXXXXX`, where X is a digit.
+
+- `datetime_recorded`: Timestamp; records the exact date and time of the meter reading. Should not be in the future relative to data processing date. Must be consistent with `year`, `month`, `week`, `day`, and `day_of_week`.
+
+- `year`: Numerical; indicates the year in which the reading was recorded. Must align with the `datetime_recorded` year.
+
+- `month`: Numerical; indicates the month of the reading. Must be between 1 and 12 and consistent with `datetime_recorded`.
+
+- `week`: Numerical; indicates the week number of the year. Must be between 1 and 53 and consistent with `datetime_recorded`.
+
+- `day`: Numerical; indicates the day of the month. Must be between 1 and 31 and consistent with `datetime_recorded`.
+
+- `day_of_week`: Categorical; indicates the day of the week. Must match the `datetime_recorded` day.
+
+- `usage`: Numerical; represents the energy usage in kWh. Must be >= 0. Values significantly higher than the 75th percentile (e.g., > 100 units) should be flagged for review. Negative values are invalid.
+
+- `return`: Numerical; represents the energy returned to the grid in kWh. Typically should be >= 0, but negative values may indicate consumption. Values above the 75th percentile (e.g., > 1 unit) should be reviewed.
+
+- `bron`: Categorical; source type for the reading. Currently only 'SDS' is used, so any other value should be flagged.
+
+- `date`: Categorical; represents the date of the reading in `YYYY-MM-DD` format. Must match the date part of `datetime_recorded`.

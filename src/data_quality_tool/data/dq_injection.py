@@ -12,7 +12,7 @@ logger = get_logger()
 
 load_dotenv()
 INJECTION_FORCE_REFRESH = os.getenv("INJECTION_FORCE_REFRESH", "False").lower() == "true"
-MAX_EXCEL_ROWS = int(os.getenv("MAX_EXCEL_ROWS", "500000"))
+
 
 
 def get_error_config():
@@ -35,8 +35,8 @@ class BaseDQInjector:
                 df[col] = df[col].astype(float)
                 changed.append((col, 'int -> float'))
             elif pd.api.types.is_bool_dtype(df[col]):
-                df[col] = df[col].astype(object)
-                changed.append((col, 'bool -> object'))
+                df[col] = df[col].astype("boolean")  # FIXED LINE
+                changed.append((col, 'bool -> boolean'))
             elif isinstance(df[col].dtype, pd.CategoricalDtype):
                 df[col] = df[col].astype(object)
                 changed.append((col, 'category -> object'))
@@ -44,6 +44,7 @@ class BaseDQInjector:
         return df
 
     def _sample_if_too_large(self, df: pd.DataFrame) -> pd.DataFrame:
+        MAX_EXCEL_ROWS = int(os.getenv("MAX_EXCEL_ROWS", "500000"))
         if len(df) > MAX_EXCEL_ROWS:
             logger.warning("Dataset too large. Sampling down to %d rows.", MAX_EXCEL_ROWS)
             return df.sample(n=MAX_EXCEL_ROWS, random_state=42).reset_index(drop=True)
@@ -124,16 +125,49 @@ class BaseDQInjector:
                 dq_mask.iat[r, c] = "missing"
 
         # === DUPLICATES ===
-        num_duplicates = int(self.error_config['duplicates'] * num_rows)
+        num_duplicates = int(self.error_config["duplicates"] * num_rows)
         if num_duplicates > 0:
-            logger.info("Injecting %d duplicate rows...", num_duplicates)
-            duplicate_rows = df.sample(n=num_duplicates, replace=True, random_state=42)
-            df = pd.concat([df, duplicate_rows], ignore_index=True)
-            duplicate_mask = pd.DataFrame(
-                [["duplicates"] * len(df.columns)] * num_duplicates,
-                columns=df.columns
+            logger.info("Injecting %d duplicate rows at random positions…", num_duplicates)
+
+            # Pick rows to duplicate (from the whole df or a pool you prefer)
+            duplicate_rows = df.sample(n=num_duplicates, replace=True, random_state=42).reset_index(drop=True)
+
+            # Choose random insertion indices in the *expanded* dataframe
+            #     There will be len(df) + num_duplicates rows after injection
+            insertion_idx = np.sort(
+                np.random.RandomState(42).choice(len(df) + num_duplicates, num_duplicates, replace=False)
             )
-            dq_mask = pd.concat([dq_mask, duplicate_mask], ignore_index=True)
+
+            # Build new df & mask pieces on the fly
+            new_df_parts, new_mask_parts = [], []
+            cursor = 0
+            for dup_i, ins_pos in enumerate(insertion_idx):
+                # Original row to duplicate
+                orig_row = duplicate_rows.iloc[[dup_i]]
+
+                # slice original up to insertion point
+                new_df_parts.append(df.iloc[cursor:ins_pos])
+                new_mask_parts.append(dq_mask.iloc[cursor:ins_pos])
+
+                # insert the duplicate row
+                new_df_parts.append(orig_row)
+                new_mask_parts.append(pd.DataFrame([[""] * len(df.columns)], columns=df.columns))  # insert as normal
+
+                cursor = ins_pos
+
+            # append the tail
+            new_df_parts.append(df.iloc[cursor:])
+            new_mask_parts.append(dq_mask.iloc[cursor:])
+
+            # Re-assemble
+            df = pd.concat(new_df_parts, ignore_index=True)
+            dq_mask = pd.concat(new_mask_parts, ignore_index=True)
+
+            # Now find duplicates and only flag second occurrence
+            duplicate_flags = df.duplicated(keep="first")
+            dq_mask.loc[duplicate_flags, :] = "duplicates"
+
+            logger.debug("Post-injection shape: %s (duplicates: %d)", df.shape, df.duplicated().sum())
 
         # === Final Validation ===
         if len(df) != len(dq_mask):
@@ -185,3 +219,9 @@ class WallmartDQInjector(BaseDQInjector):
         df = self._sample_if_too_large(df)
         logger.info("Starting Wallmart DQ Injection...")
         super().inject_errors(df, output_dir_path, file_prefix, domain="wallmart")
+
+class SensorDQInjector(BaseDQInjector):
+    def inject_errors(self, df: pd.DataFrame, output_dir_path: str, file_prefix: str = "sensor"):
+        df = self._sample_if_too_large(df)
+        logger.info("Starting Sensor DQ Injection...")
+        super().inject_errors(df, output_dir_path, file_prefix, domain="sensor")

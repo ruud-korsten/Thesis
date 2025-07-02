@@ -1,0 +1,726 @@
+2025-06-20 13:49:25,966 - INFO - === health | size=Medium | error=0.01 | rows=2000 ===
+2025-06-20 13:49:26,021 - ERROR - Failed run: health | size=Medium | error=0.01 | rows=2000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 52, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:49:26,031 - INFO - === health | size=Medium | error=0.01 | rows=4000 ===
+2025-06-20 13:49:26,077 - ERROR - Failed run: health | size=Medium | error=0.01 | rows=4000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 52, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:49:26,080 - INFO - === health | size=Medium | error=0.01 | rows=6000 ===
+2025-06-20 13:49:26,141 - ERROR - Failed run: health | size=Medium | error=0.01 | rows=6000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 52, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:49:26,143 - INFO - === health | size=Medium | error=0.01 | rows=8000 ===
+2025-06-20 13:49:26,211 - ERROR - Failed run: health | size=Medium | error=0.01 | rows=8000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 52, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:49:26,213 - INFO - === health | size=Medium | error=0.01 | rows=10000 ===
+2025-06-20 13:49:26,289 - ERROR - Failed run: health | size=Medium | error=0.01 | rows=10000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 52, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:49:42,184 - INFO - === health | size=Medium | error=0.1 | rows=2000 ===
+2025-06-20 13:49:42,214 - ERROR - Failed run: health | size=Medium | error=0.1 | rows=2000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 52, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:49:42,216 - INFO - === health | size=Medium | error=0.1 | rows=4000 ===
+2025-06-20 13:49:42,262 - ERROR - Failed run: health | size=Medium | error=0.1 | rows=4000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 52, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:49:42,263 - INFO - === health | size=Medium | error=0.1 | rows=6000 ===
+2025-06-20 13:49:42,317 - ERROR - Failed run: health | size=Medium | error=0.1 | rows=6000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 52, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:49:42,319 - INFO - === health | size=Medium | error=0.1 | rows=8000 ===
+2025-06-20 13:49:42,404 - ERROR - Failed run: health | size=Medium | error=0.1 | rows=8000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 52, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:49:42,407 - INFO - === health | size=Medium | error=0.1 | rows=10000 ===
+2025-06-20 13:49:42,493 - ERROR - Failed run: health | size=Medium | error=0.1 | rows=10000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 52, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:50:55,538 - INFO - === health | size=Large | error=0.01 | rows=20000 ===
+2025-06-20 13:50:55,725 - ERROR - Failed run: health | size=Large | error=0.01 | rows=20000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 52, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:50:55,733 - INFO - === health | size=Large | error=0.01 | rows=40000 ===
+2025-06-20 13:50:56,028 - ERROR - Failed run: health | size=Large | error=0.01 | rows=40000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 52, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:50:56,038 - INFO - === health | size=Large | error=0.01 | rows=60000 ===
+2025-06-20 13:53:54,759 - INFO - === health | size=Medium | error=0.01 | rows=2000 ===
+2025-06-20 13:53:54,800 - ERROR - Failed run: health | size=Medium | error=0.01 | rows=2000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:53:54,803 - INFO - === health | size=Medium | error=0.01 | rows=4000 ===
+2025-06-20 13:53:54,858 - ERROR - Failed run: health | size=Medium | error=0.01 | rows=4000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:53:54,859 - INFO - === health | size=Medium | error=0.01 | rows=6000 ===
+2025-06-20 13:53:54,926 - ERROR - Failed run: health | size=Medium | error=0.01 | rows=6000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:53:54,928 - INFO - === health | size=Medium | error=0.01 | rows=8000 ===
+2025-06-20 13:53:55,012 - ERROR - Failed run: health | size=Medium | error=0.01 | rows=8000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:53:55,014 - INFO - === health | size=Medium | error=0.01 | rows=10000 ===
+2025-06-20 13:53:55,106 - ERROR - Failed run: health | size=Medium | error=0.01 | rows=10000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:54:13,731 - INFO - === health | size=Medium | error=0.1 | rows=2000 ===
+2025-06-20 13:54:18,773 - ERROR - Failed run: health | size=Medium | error=0.1 | rows=2000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:54:18,776 - INFO - === health | size=Medium | error=0.1 | rows=4000 ===
+2025-06-20 13:54:18,997 - ERROR - Failed run: health | size=Medium | error=0.1 | rows=4000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:54:19,000 - INFO - === health | size=Medium | error=0.1 | rows=6000 ===
+2025-06-20 13:54:19,080 - ERROR - Failed run: health | size=Medium | error=0.1 | rows=6000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:54:19,085 - INFO - === health | size=Medium | error=0.1 | rows=8000 ===
+2025-06-20 13:54:19,188 - ERROR - Failed run: health | size=Medium | error=0.1 | rows=8000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:54:19,190 - INFO - === health | size=Medium | error=0.1 | rows=10000 ===
+2025-06-20 13:54:19,294 - ERROR - Failed run: health | size=Medium | error=0.1 | rows=10000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:54:39,706 - INFO - === health | size=Medium | error=0.01 | rows=2000 ===
+2025-06-20 13:54:39,752 - ERROR - Failed run: health | size=Medium | error=0.01 | rows=2000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:54:39,755 - INFO - === health | size=Medium | error=0.01 | rows=4000 ===
+2025-06-20 13:54:39,816 - ERROR - Failed run: health | size=Medium | error=0.01 | rows=4000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:54:39,821 - INFO - === health | size=Medium | error=0.01 | rows=6000 ===
+2025-06-20 13:54:39,915 - ERROR - Failed run: health | size=Medium | error=0.01 | rows=6000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:54:39,918 - INFO - === health | size=Medium | error=0.01 | rows=8000 ===
+2025-06-20 13:54:40,007 - ERROR - Failed run: health | size=Medium | error=0.01 | rows=8000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:54:40,010 - INFO - === health | size=Medium | error=0.01 | rows=10000 ===
+2025-06-20 13:54:40,123 - ERROR - Failed run: health | size=Medium | error=0.01 | rows=10000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:54:55,614 - INFO - === health | size=Medium | error=0.1 | rows=2000 ===
+2025-06-20 13:54:55,664 - ERROR - Failed run: health | size=Medium | error=0.1 | rows=2000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:54:55,666 - INFO - === health | size=Medium | error=0.1 | rows=4000 ===
+2025-06-20 13:54:55,728 - ERROR - Failed run: health | size=Medium | error=0.1 | rows=4000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:54:55,731 - INFO - === health | size=Medium | error=0.1 | rows=6000 ===
+2025-06-20 13:54:55,800 - ERROR - Failed run: health | size=Medium | error=0.1 | rows=6000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:54:55,804 - INFO - === health | size=Medium | error=0.1 | rows=8000 ===
+2025-06-20 13:54:55,902 - ERROR - Failed run: health | size=Medium | error=0.1 | rows=8000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:54:55,905 - INFO - === health | size=Medium | error=0.1 | rows=10000 ===
+2025-06-20 13:54:56,025 - ERROR - Failed run: health | size=Medium | error=0.1 | rows=10000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:56:05,093 - INFO - === health | size=Large | error=0.01 | rows=20000 ===
+2025-06-20 13:56:05,270 - ERROR - Failed run: health | size=Large | error=0.01 | rows=20000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:56:05,276 - INFO - === health | size=Large | error=0.01 | rows=40000 ===
+2025-06-20 13:56:05,582 - ERROR - Failed run: health | size=Large | error=0.01 | rows=40000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:56:05,591 - INFO - === health | size=Large | error=0.01 | rows=60000 ===
+2025-06-20 13:56:06,069 - ERROR - Failed run: health | size=Large | error=0.01 | rows=60000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:56:06,080 - INFO - === health | size=Large | error=0.01 | rows=80000 ===
+2025-06-20 13:56:06,676 - ERROR - Failed run: health | size=Large | error=0.01 | rows=80000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:56:06,692 - INFO - === health | size=Large | error=0.01 | rows=100000 ===
+2025-06-20 13:56:07,621 - ERROR - Failed run: health | size=Large | error=0.01 | rows=100000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:56:30,819 - INFO - === health | size=Medium | error=0.01 | rows=2000 ===
+2025-06-20 13:56:30,876 - ERROR - Failed run: health | size=Medium | error=0.01 | rows=2000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:56:30,879 - INFO - === health | size=Medium | error=0.01 | rows=4000 ===
+2025-06-20 13:56:30,952 - ERROR - Failed run: health | size=Medium | error=0.01 | rows=4000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:56:30,955 - INFO - === health | size=Medium | error=0.01 | rows=6000 ===
+2025-06-20 13:56:31,033 - ERROR - Failed run: health | size=Medium | error=0.01 | rows=6000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:56:31,038 - INFO - === health | size=Medium | error=0.01 | rows=8000 ===
+2025-06-20 13:56:31,131 - ERROR - Failed run: health | size=Medium | error=0.01 | rows=8000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:56:31,138 - INFO - === health | size=Medium | error=0.01 | rows=10000 ===
+2025-06-20 13:56:31,265 - ERROR - Failed run: health | size=Medium | error=0.01 | rows=10000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:56:47,675 - INFO - === health | size=Medium | error=0.1 | rows=2000 ===
+2025-06-20 13:56:47,729 - ERROR - Failed run: health | size=Medium | error=0.1 | rows=2000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:56:47,738 - INFO - === health | size=Medium | error=0.1 | rows=4000 ===
+2025-06-20 13:56:47,796 - ERROR - Failed run: health | size=Medium | error=0.1 | rows=4000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:56:47,804 - INFO - === health | size=Medium | error=0.1 | rows=6000 ===
+2025-06-20 13:56:47,881 - ERROR - Failed run: health | size=Medium | error=0.1 | rows=6000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:56:47,892 - INFO - === health | size=Medium | error=0.1 | rows=8000 ===
+2025-06-20 13:56:47,996 - ERROR - Failed run: health | size=Medium | error=0.1 | rows=8000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:56:48,000 - INFO - === health | size=Medium | error=0.1 | rows=10000 ===
+2025-06-20 13:56:48,097 - ERROR - Failed run: health | size=Medium | error=0.1 | rows=10000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:57:53,249 - INFO - === health | size=Large | error=0.01 | rows=20000 ===
+2025-06-20 13:57:53,404 - ERROR - Failed run: health | size=Large | error=0.01 | rows=20000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:57:53,411 - INFO - === health | size=Large | error=0.01 | rows=40000 ===
+2025-06-20 13:57:53,702 - ERROR - Failed run: health | size=Large | error=0.01 | rows=40000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:57:53,713 - INFO - === health | size=Large | error=0.01 | rows=60000 ===
+2025-06-20 13:57:54,172 - ERROR - Failed run: health | size=Large | error=0.01 | rows=60000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:57:54,184 - INFO - === health | size=Large | error=0.01 | rows=80000 ===
+2025-06-20 13:57:54,802 - ERROR - Failed run: health | size=Large | error=0.01 | rows=80000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:57:54,815 - INFO - === health | size=Large | error=0.01 | rows=100000 ===
+2025-06-20 13:57:55,586 - ERROR - Failed run: health | size=Large | error=0.01 | rows=100000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:59:20,162 - INFO - === health | size=Large | error=0.1 | rows=20000 ===
+2025-06-20 13:59:20,366 - ERROR - Failed run: health | size=Large | error=0.1 | rows=20000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:59:20,382 - INFO - === health | size=Large | error=0.1 | rows=40000 ===
+2025-06-20 13:59:20,731 - ERROR - Failed run: health | size=Large | error=0.1 | rows=40000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:59:20,743 - INFO - === health | size=Large | error=0.1 | rows=60000 ===
+2025-06-20 13:59:21,234 - ERROR - Failed run: health | size=Large | error=0.1 | rows=60000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:59:21,258 - INFO - === health | size=Large | error=0.1 | rows=80000 ===
+2025-06-20 13:59:21,860 - ERROR - Failed run: health | size=Large | error=0.1 | rows=80000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 13:59:21,878 - INFO - === health | size=Large | error=0.1 | rows=100000 ===
+2025-06-20 13:59:22,699 - ERROR - Failed run: health | size=Large | error=0.1 | rows=100000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 53, in <module>
+    mask_df = build_violation_mask(result_df, rule_reports={}, note_results={}, expected_dtypes=expected_dtypes)
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\src\data_quality_tool\evaluation\mask_builder.py", line 9, in build_violation_mask
+    original_columns = [col for col in df.columns if not col.startswith("violation_")]
+                                       ^^^^^^^^^^
+AttributeError: 'dict' object has no attribute 'columns'
+2025-06-20 14:29:17,230 - INFO - === health | size=Medium | error=0.01 | rows=2000 ===
+2025-06-20 14:29:17,260 - ERROR - Failed run: health | size=Medium | error=0.01 | rows=2000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 52, in <module>
+    print("RESULT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!:",result_df)
+                                                                                                                             ^^^^^^^^^
+NameError: name 'result_df' is not defined
+2025-06-20 14:29:17,262 - INFO - === health | size=Medium | error=0.01 | rows=4000 ===
+2025-06-20 14:29:17,306 - ERROR - Failed run: health | size=Medium | error=0.01 | rows=4000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 52, in <module>
+    print("RESULT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!:",result_df)
+                                                                                                                             ^^^^^^^^^
+NameError: name 'result_df' is not defined
+2025-06-20 14:29:17,308 - INFO - === health | size=Medium | error=0.01 | rows=6000 ===
+2025-06-20 14:29:17,370 - ERROR - Failed run: health | size=Medium | error=0.01 | rows=6000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 52, in <module>
+    print("RESULT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!:",result_df)
+                                                                                                                             ^^^^^^^^^
+NameError: name 'result_df' is not defined
+2025-06-20 14:29:17,375 - INFO - === health | size=Medium | error=0.01 | rows=8000 ===
+2025-06-20 14:29:17,456 - ERROR - Failed run: health | size=Medium | error=0.01 | rows=8000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 52, in <module>
+    print("RESULT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!:",result_df)
+                                                                                                                             ^^^^^^^^^
+NameError: name 'result_df' is not defined
+2025-06-20 14:29:17,462 - INFO - === health | size=Medium | error=0.01 | rows=10000 ===
+2025-06-20 14:29:17,559 - ERROR - Failed run: health | size=Medium | error=0.01 | rows=10000
+Traceback (most recent call last):
+  File "C:\Users\1ruud\Documents\Thesis Blenddata\Thesis\baseline.py", line 52, in <module>
+    print("RESULT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!:",result_df)
+                                                                                                                             ^^^^^^^^^
+NameError: name 'result_df' is not defined
+2025-06-20 14:29:56,062 - INFO - === health | size=Medium | error=0.01 | rows=2000 ===
+2025-06-20 14:29:57,527 - INFO - Run time: 1.46 seconds
+2025-06-20 14:29:57,528 - INFO - === health | size=Medium | error=0.01 | rows=4000 ===
+2025-06-20 14:29:58,700 - INFO - Run time: 1.17 seconds
+2025-06-20 14:29:58,703 - INFO - === health | size=Medium | error=0.01 | rows=6000 ===
+2025-06-20 14:29:59,942 - INFO - Run time: 1.24 seconds
+2025-06-20 14:29:59,956 - INFO - === health | size=Medium | error=0.01 | rows=8000 ===
+2025-06-20 14:30:02,509 - INFO - Run time: 2.55 seconds
+2025-06-20 14:30:02,512 - INFO - === health | size=Medium | error=0.01 | rows=10000 ===
+2025-06-20 14:30:03,872 - INFO - Run time: 1.36 seconds
+2025-06-20 14:30:25,926 - INFO - === health | size=Medium | error=0.1 | rows=2000 ===
+2025-06-20 14:30:27,034 - INFO - Run time: 1.11 seconds
+2025-06-20 14:30:27,035 - INFO - === health | size=Medium | error=0.1 | rows=4000 ===
+2025-06-20 14:30:28,251 - INFO - Run time: 1.22 seconds
+2025-06-20 14:30:28,252 - INFO - === health | size=Medium | error=0.1 | rows=6000 ===
+2025-06-20 14:30:29,552 - INFO - Run time: 1.30 seconds
+2025-06-20 14:30:29,554 - INFO - === health | size=Medium | error=0.1 | rows=8000 ===
+2025-06-20 14:30:30,989 - INFO - Run time: 1.43 seconds
+2025-06-20 14:30:30,990 - INFO - === health | size=Medium | error=0.1 | rows=10000 ===
+2025-06-20 14:30:32,728 - INFO - Run time: 1.74 seconds
+2025-06-20 14:30:32,741 - INFO - Saved baseline metrics for config baseline_health_Medium_NoGenAI_err0.01
+2025-06-20 14:30:32,746 - INFO - Saved baseline metrics for config baseline_health_Medium_NoGenAI_err0.1
+2025-06-20 14:31:39,818 - INFO - === health | size=Large | error=0.01 | rows=20000 ===
+2025-06-20 14:31:46,180 - INFO - Run time: 6.36 seconds
+2025-06-20 14:31:46,186 - INFO - === health | size=Large | error=0.01 | rows=40000 ===
+2025-06-20 14:31:53,545 - INFO - Run time: 7.36 seconds
+2025-06-20 14:31:53,552 - INFO - === health | size=Large | error=0.01 | rows=60000 ===
+2025-06-20 14:32:01,664 - INFO - Run time: 8.11 seconds
+2025-06-20 14:32:01,677 - INFO - === health | size=Large | error=0.01 | rows=80000 ===
+2025-06-20 14:32:11,080 - INFO - Run time: 9.40 seconds
+2025-06-20 14:32:11,092 - INFO - === health | size=Large | error=0.01 | rows=100000 ===
+2025-06-20 14:32:21,680 - INFO - Run time: 10.59 seconds
+2025-06-20 14:33:44,353 - INFO - === health | size=Large | error=0.1 | rows=20000 ===
+2025-06-20 14:33:52,889 - INFO - Run time: 8.53 seconds
+2025-06-20 14:33:52,893 - INFO - === health | size=Large | error=0.1 | rows=40000 ===
+2025-06-20 14:34:03,795 - INFO - Run time: 10.90 seconds
+2025-06-20 14:34:03,803 - INFO - === health | size=Large | error=0.1 | rows=60000 ===
+2025-06-20 14:34:17,380 - INFO - Run time: 13.58 seconds
+2025-06-20 14:34:17,389 - INFO - === health | size=Large | error=0.1 | rows=80000 ===
+2025-06-20 14:34:32,124 - INFO - Run time: 14.73 seconds
+2025-06-20 14:34:32,135 - INFO - === health | size=Large | error=0.1 | rows=100000 ===
+2025-06-20 14:34:49,931 - INFO - Run time: 17.79 seconds
+2025-06-20 14:34:49,939 - INFO - Saved baseline metrics for config baseline_health_Large_NoGenAI_err0.01
+2025-06-20 14:34:49,941 - INFO - Saved baseline metrics for config baseline_health_Large_NoGenAI_err0.1
+2025-06-20 14:35:19,999 - INFO - === retail | size=Medium | error=0.01 | rows=2000 ===
+2025-06-20 14:35:20,584 - INFO - Run time: 0.58 seconds
+2025-06-20 14:35:20,585 - INFO - === retail | size=Medium | error=0.01 | rows=4000 ===
+2025-06-20 14:35:21,238 - INFO - Run time: 0.65 seconds
+2025-06-20 14:35:21,239 - INFO - === retail | size=Medium | error=0.01 | rows=6000 ===
+2025-06-20 14:35:22,164 - INFO - Run time: 0.93 seconds
+2025-06-20 14:35:22,165 - INFO - === retail | size=Medium | error=0.01 | rows=8000 ===
+2025-06-20 14:35:23,587 - INFO - Run time: 1.42 seconds
+2025-06-20 14:35:23,588 - INFO - === retail | size=Medium | error=0.01 | rows=10000 ===
+2025-06-20 14:35:25,662 - INFO - Run time: 2.07 seconds
+2025-06-20 14:35:58,072 - INFO - === retail | size=Medium | error=0.1 | rows=2000 ===
+2025-06-20 14:35:58,719 - INFO - Run time: 0.65 seconds
+2025-06-20 14:35:58,719 - INFO - === retail | size=Medium | error=0.1 | rows=4000 ===
+2025-06-20 14:35:59,559 - INFO - Run time: 0.84 seconds
+2025-06-20 14:35:59,560 - INFO - === retail | size=Medium | error=0.1 | rows=6000 ===
+2025-06-20 14:36:00,445 - INFO - Run time: 0.88 seconds
+2025-06-20 14:36:00,446 - INFO - === retail | size=Medium | error=0.1 | rows=8000 ===
+2025-06-20 14:36:01,435 - INFO - Run time: 0.99 seconds
+2025-06-20 14:36:01,435 - INFO - === retail | size=Medium | error=0.1 | rows=10000 ===
+2025-06-20 14:36:02,571 - INFO - Run time: 1.14 seconds
+2025-06-20 14:36:02,574 - INFO - Saved baseline metrics for config baseline_retail_Medium_NoGenAI_err0.01
+2025-06-20 14:36:02,578 - INFO - Saved baseline metrics for config baseline_retail_Medium_NoGenAI_err0.1
+2025-06-20 14:37:09,065 - INFO - === retail | size=Large | error=0.01 | rows=20000 ===
+2025-06-20 14:37:13,823 - INFO - Run time: 4.76 seconds
+2025-06-20 14:37:13,827 - INFO - === retail | size=Large | error=0.01 | rows=40000 ===
+2025-06-20 14:37:19,502 - INFO - Run time: 5.67 seconds
+2025-06-20 14:37:19,506 - INFO - === retail | size=Large | error=0.01 | rows=60000 ===
+2025-06-20 14:37:25,809 - INFO - Run time: 6.30 seconds
+2025-06-20 14:37:25,813 - INFO - === retail | size=Large | error=0.01 | rows=80000 ===
+2025-06-20 14:37:32,425 - INFO - Run time: 6.61 seconds
+2025-06-20 14:37:32,430 - INFO - === retail | size=Large | error=0.01 | rows=100000 ===
+2025-06-20 14:37:39,500 - INFO - Run time: 7.07 seconds
+2025-06-20 14:39:19,475 - INFO - === retail | size=Large | error=0.1 | rows=20000 ===
+2025-06-20 14:39:28,545 - INFO - Run time: 9.07 seconds
+2025-06-20 14:39:28,552 - INFO - === retail | size=Large | error=0.1 | rows=40000 ===
+2025-06-20 14:39:38,666 - INFO - Run time: 10.11 seconds
+2025-06-20 14:39:38,674 - INFO - === retail | size=Large | error=0.1 | rows=60000 ===
+2025-06-20 14:39:48,762 - INFO - Run time: 10.09 seconds
+2025-06-20 14:39:48,771 - INFO - === retail | size=Large | error=0.1 | rows=80000 ===
+2025-06-20 14:40:00,563 - INFO - Run time: 11.79 seconds
+2025-06-20 14:40:00,574 - INFO - === retail | size=Large | error=0.1 | rows=100000 ===
+2025-06-20 14:40:12,150 - INFO - Run time: 11.58 seconds
+2025-06-20 14:40:12,154 - INFO - Saved baseline metrics for config baseline_retail_Large_NoGenAI_err0.01
+2025-06-20 14:40:12,157 - INFO - Saved baseline metrics for config baseline_retail_Large_NoGenAI_err0.1
+2025-06-20 14:40:17,292 - INFO - === wallmart | size=Medium | error=0.01 | rows=2000 ===
+2025-06-20 14:40:17,952 - INFO - Run time: 0.66 seconds
+2025-06-20 14:40:17,952 - INFO - === wallmart | size=Medium | error=0.01 | rows=4000 ===
+2025-06-20 14:40:18,530 - INFO - Run time: 0.58 seconds
+2025-06-20 14:40:18,530 - INFO - === wallmart | size=Medium | error=0.01 | rows=6000 ===
+2025-06-20 14:40:19,147 - INFO - Run time: 0.62 seconds
+2025-06-20 14:40:19,147 - INFO - === wallmart | size=Medium | error=0.01 | rows=8000 ===
+2025-06-20 14:40:19,866 - INFO - Run time: 0.72 seconds
+2025-06-20 14:40:19,867 - INFO - === wallmart | size=Medium | error=0.01 | rows=10000 ===
+2025-06-20 14:40:20,603 - INFO - Run time: 0.74 seconds
+2025-06-20 14:40:25,303 - INFO - === wallmart | size=Medium | error=0.1 | rows=2000 ===
+2025-06-20 14:40:26,060 - INFO - Run time: 0.76 seconds
+2025-06-20 14:40:26,060 - INFO - === wallmart | size=Medium | error=0.1 | rows=4000 ===
+2025-06-20 14:40:26,730 - INFO - Run time: 0.67 seconds
+2025-06-20 14:40:26,730 - INFO - === wallmart | size=Medium | error=0.1 | rows=6000 ===
+2025-06-20 14:40:27,563 - INFO - Run time: 0.83 seconds
+2025-06-20 14:40:27,564 - INFO - === wallmart | size=Medium | error=0.1 | rows=8000 ===
+2025-06-20 14:40:28,601 - INFO - Run time: 1.04 seconds
+2025-06-20 14:40:28,602 - INFO - === wallmart | size=Medium | error=0.1 | rows=10000 ===
+2025-06-20 14:40:30,367 - INFO - Run time: 1.76 seconds
+2025-06-20 14:40:30,372 - INFO - Saved baseline metrics for config baseline_wallmart_Medium_NoGenAI_err0.01
+2025-06-20 14:40:30,376 - INFO - Saved baseline metrics for config baseline_wallmart_Medium_NoGenAI_err0.1
+2025-06-20 14:41:16,251 - INFO - === wallmart | size=Large | error=0.01 | rows=20000 ===
+2025-06-20 14:41:26,001 - INFO - Run time: 9.75 seconds
+2025-06-20 14:41:26,004 - INFO - === wallmart | size=Large | error=0.01 | rows=40000 ===
+2025-06-20 14:41:34,999 - INFO - Run time: 8.99 seconds
+2025-06-20 14:41:35,002 - INFO - === wallmart | size=Large | error=0.01 | rows=60000 ===
+2025-06-20 14:41:44,453 - INFO - Run time: 9.45 seconds
+2025-06-20 14:41:44,457 - INFO - === wallmart | size=Large | error=0.01 | rows=80000 ===
+2025-06-20 14:41:52,213 - INFO - Run time: 7.76 seconds
+2025-06-20 14:41:52,217 - INFO - === wallmart | size=Large | error=0.01 | rows=100000 ===
+2025-06-20 14:42:00,589 - INFO - Run time: 8.37 seconds
+2025-06-20 14:43:02,229 - INFO - === wallmart | size=Large | error=0.1 | rows=20000 ===
+2025-06-20 14:43:08,797 - INFO - Run time: 6.57 seconds
+2025-06-20 14:43:08,800 - INFO - === wallmart | size=Large | error=0.1 | rows=40000 ===
+2025-06-20 14:43:20,192 - INFO - Run time: 11.39 seconds
+2025-06-20 14:43:20,196 - INFO - === wallmart | size=Large | error=0.1 | rows=60000 ===
+2025-06-20 14:43:31,370 - INFO - Run time: 11.17 seconds
+2025-06-20 14:43:31,375 - INFO - === wallmart | size=Large | error=0.1 | rows=80000 ===
+2025-06-20 14:43:48,080 - INFO - Run time: 16.71 seconds
+2025-06-20 14:43:48,087 - INFO - === wallmart | size=Large | error=0.1 | rows=100000 ===
+2025-06-20 14:44:04,392 - INFO - Run time: 16.30 seconds
+2025-06-20 14:44:04,399 - INFO - Saved baseline metrics for config baseline_wallmart_Large_NoGenAI_err0.01
+2025-06-20 14:44:04,404 - INFO - Saved baseline metrics for config baseline_wallmart_Large_NoGenAI_err0.1
+2025-06-20 14:44:12,791 - INFO - === sensor | size=Medium | error=0.01 | rows=2000 ===
+2025-06-20 14:44:13,778 - INFO - Run time: 0.99 seconds
+2025-06-20 14:44:13,779 - INFO - === sensor | size=Medium | error=0.01 | rows=4000 ===
+2025-06-20 14:44:14,853 - INFO - Run time: 1.07 seconds
+2025-06-20 14:44:14,854 - INFO - === sensor | size=Medium | error=0.01 | rows=6000 ===
+2025-06-20 14:44:16,132 - INFO - Run time: 1.28 seconds
+2025-06-20 14:44:16,134 - INFO - === sensor | size=Medium | error=0.01 | rows=8000 ===
+2025-06-20 14:44:17,557 - INFO - Run time: 1.42 seconds
+2025-06-20 14:44:17,560 - INFO - === sensor | size=Medium | error=0.01 | rows=10000 ===
+2025-06-20 14:44:19,524 - INFO - Run time: 1.96 seconds
+2025-06-20 14:44:29,399 - INFO - === sensor | size=Medium | error=0.1 | rows=2000 ===
+2025-06-20 14:44:31,407 - INFO - Run time: 2.01 seconds
+2025-06-20 14:44:31,408 - INFO - === sensor | size=Medium | error=0.1 | rows=4000 ===
+2025-06-20 14:44:33,808 - INFO - Run time: 2.40 seconds
+2025-06-20 14:44:33,809 - INFO - === sensor | size=Medium | error=0.1 | rows=6000 ===
+2025-06-20 14:44:35,844 - INFO - Run time: 2.03 seconds
+2025-06-20 14:44:35,845 - INFO - === sensor | size=Medium | error=0.1 | rows=8000 ===
+2025-06-20 14:44:38,736 - INFO - Run time: 2.89 seconds
+2025-06-20 14:44:38,737 - INFO - === sensor | size=Medium | error=0.1 | rows=10000 ===
+2025-06-20 14:44:42,874 - INFO - Run time: 4.14 seconds
+2025-06-20 14:44:42,884 - INFO - Saved baseline metrics for config baseline_sensor_Medium_NoGenAI_err0.01
+2025-06-20 14:44:42,890 - INFO - Saved baseline metrics for config baseline_sensor_Medium_NoGenAI_err0.1
+2025-06-20 14:45:51,712 - INFO - === sensor | size=Large | error=0.01 | rows=20000 ===
+2025-06-20 14:46:00,307 - INFO - Run time: 8.59 seconds
+2025-06-20 14:46:00,314 - INFO - === sensor | size=Large | error=0.01 | rows=40000 ===
+2025-06-20 14:46:12,289 - INFO - Run time: 11.97 seconds
+2025-06-20 14:46:12,295 - INFO - === sensor | size=Large | error=0.01 | rows=60000 ===
+2025-06-20 14:46:28,252 - INFO - Run time: 15.96 seconds
+2025-06-20 14:46:28,262 - INFO - === sensor | size=Large | error=0.01 | rows=80000 ===
+2025-06-20 14:46:44,845 - INFO - Run time: 16.58 seconds
+2025-06-20 14:46:44,855 - INFO - === sensor | size=Large | error=0.01 | rows=100000 ===
+2025-06-20 14:46:59,190 - INFO - Run time: 14.33 seconds
+2025-06-20 14:49:18,789 - INFO - === sensor | size=Large | error=0.1 | rows=20000 ===
+2025-06-20 14:49:33,827 - INFO - Run time: 15.04 seconds
+2025-06-20 14:49:33,832 - INFO - === sensor | size=Large | error=0.1 | rows=40000 ===
+2025-06-20 14:49:54,243 - INFO - Run time: 20.41 seconds
+2025-06-20 14:49:54,249 - INFO - === sensor | size=Large | error=0.1 | rows=60000 ===
+2025-06-20 14:50:19,962 - INFO - Run time: 25.71 seconds
+2025-06-20 14:50:19,975 - INFO - === sensor | size=Large | error=0.1 | rows=80000 ===
+2025-06-20 14:50:41,518 - INFO - Run time: 21.54 seconds
+2025-06-20 14:50:41,540 - INFO - === sensor | size=Large | error=0.1 | rows=100000 ===
+2025-06-20 14:51:06,930 - INFO - Run time: 25.39 seconds
+2025-06-20 14:51:06,936 - INFO - Saved baseline metrics for config baseline_sensor_Large_NoGenAI_err0.01
+2025-06-20 14:51:06,939 - INFO - Saved baseline metrics for config baseline_sensor_Large_NoGenAI_err0.1
+2025-06-20 14:51:06,940 - INFO - All baseline experiments complete.

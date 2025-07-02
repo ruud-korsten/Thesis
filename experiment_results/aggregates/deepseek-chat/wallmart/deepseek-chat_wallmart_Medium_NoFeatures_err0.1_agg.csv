@@ -1,0 +1,2 @@
+dataset,size,model,features,error_level,mean_accuracy,mean_f1,std_f1,mean_latency,mean_tokens,runs_count
+wallmart,Medium,deepseek-chat,NoFeatures,0.1,0.8006093333333333,0.6820387101384754,0.032819111164105866,54.56490888595581,2938.2,5

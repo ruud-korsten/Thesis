@@ -1,0 +1,7 @@
+InvoiceNo is a 6-digit integral number uniquely assigned to each transaction. If this code starts with letter 'c', it indicates a cancellation
+StockCode must be a 5 digit integral number.
+InvoiceData may not be in the future.
+CustomerID is a 5 digit integral number.
+UnitPrice may never be negative.
+Extreme UnitPrice outliers must be flagged.
+Extreme values for Quantity should be flagged.
